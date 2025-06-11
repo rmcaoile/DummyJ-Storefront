@@ -5,6 +5,8 @@ import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/components/ui/alert"
 import { Button } from "@/components/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/components/ui/avatar"
+import { ShoppingCart } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -12,6 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/components/ui/dialog"
+
 
 function App() {
   const [products, setProducts] = useState([])
@@ -79,19 +82,44 @@ function App() {
 
   return (
     <div className="p-6 px-20">
-      <h1 className="text-3xl font-bold mb-10 text-center">E-Commerce</h1>
 
-      {/* Search Bar */}
-      <div className="flex justify-center mb-8">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="w-full max-w-md p-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+      <div className="flex flex-row justify-between items-center mb-10 mt-5">      
+
+        {/* Store Name */}
+        <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
+
+        {/* Search Bar */}
+        <div className="flex flex-1 ">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="w-full max-w-md p-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <div className="flex flex-1 justify-end items-center gap-8">  
+          {/* Profile */}
+          <div className="flex items-center gap-2 cursor-pointer">
+            <Avatar>
+              <AvatarImage className="border border-gray-300 rounded-full" src="/pfp-placeholder.jpg" />
+              <AvatarFallback>pfp</AvatarFallback>
+            </Avatar>
+            {/* TODO: Usename */}
+            <p>Profile</p>
+          </div>
+
+          {/* Shopping Cart */}
+          <div>
+            {/* TODO: Badge */}
+            <ShoppingCart className="w-7 h-7 text-white cursor-pointer" />
+          </div>
+        </div>
+
       </div>
+
 
       {/* Categories */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
