@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "@/context/Auth"
-import LoginForm from "@/components/LoginForm"
+import ProfileSection from "@/components/ProfileSection"
 import axios from "axios"
 
 import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
@@ -105,15 +105,8 @@ function App() {
         </div>
 
         <div className="flex flex-1 justify-end items-center gap-8">  
-          {/* Profile */}
-          <div className="flex items-center gap-2 cursor-pointer">
-            <Avatar>
-              <AvatarImage className="border border-gray-300 rounded-full" src="/pfp-placeholder.jpg" />
-              <AvatarFallback>pfp</AvatarFallback>
-            </Avatar>
-            {/* TODO: Usename */}
-            <p>Profile</p>
-          </div>
+          {/* Profile Section */}
+          <ProfileSection />
 
           {/* Shopping Cart */}
           <div>
@@ -124,7 +117,6 @@ function App() {
 
       </div>
 
-<LoginForm />
 
 
       {/* Categories */}
