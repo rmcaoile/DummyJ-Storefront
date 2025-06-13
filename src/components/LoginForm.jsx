@@ -17,7 +17,7 @@ function LoginForm() {
   }
 
   return (
-    <Card className="max-w-md mx-auto shadow-none border-none py-3">
+    <Card className="max-w-md mx-auto shadow-none border-none py-3 gap-1">
       <CardHeader>
         <CardTitle className="text-center text-2xl">Login</CardTitle>
       </CardHeader>
@@ -33,30 +33,33 @@ function LoginForm() {
             Logged in as <strong>{user.username}</strong>
           </p>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Log In
-            </Button>
-          </form>
+          <div>
+            <p className="mb-3">Enter your e-mail and password:</p>
+            <form onSubmit={handleSubmit} className="space-y-4 ">
+              <div>
+                <Label htmlFor="username" className="mb-1">Username <span className="text-red-300">*</span></Label>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password" className="mb-1">Password <span className="text-red-300">*</span></Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Log In
+              </Button>
+            </form>
+          </div>
         )}
       </CardContent>
     </Card>
