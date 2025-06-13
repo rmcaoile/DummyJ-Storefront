@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react"
+import { useAuth } from "@/context/Auth"
+import LoginForm from "@/components/LoginForm"
 import axios from "axios"
 
 import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
@@ -17,6 +19,8 @@ import {
 
 
 function App() {
+  const { user } = useAuth()
+
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -119,6 +123,8 @@ function App() {
         </div>
 
       </div>
+
+<LoginForm />
 
 
       {/* Categories */}
