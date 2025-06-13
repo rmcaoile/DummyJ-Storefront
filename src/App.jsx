@@ -25,28 +25,70 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
 
-  useEffect(() => {
-    getData()
-  }, [])
+  const [userCarts, setUserCarts] = useState([])
 
-  const getData = async () => {
-    try {
+  // Fetch products 
+  useEffect(() => {
+    const fetchProducts = async () => {
       setLoading(true)
       setError(null)
-      const response = await axios.get("https://fakestoreapi.com/products")
 
-      if (!Array.isArray(response.data) || response.data.length === 0) {
-        throw new Error("No products found.")
+      try {
+        const productRes = await axios.get("https://fakestoreapi.com/products")
+        if (!Array.isArray(productRes.data)) throw new Error("No products found.")
+        console.log(productRes.data)
+        setProducts(productRes.data)
+      } catch (err) {
+        console.error("Error fetching products:", err)
+        setError("Failed to load products.")
+      } finally {
+        setLoading(false)
       }
-
-      setProducts(response.data)
-    } catch (err) {
-      console.error("Error fetching products:", err)
-      setError("Failed to load products.")
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchProducts()
+  }, []) 
+
+
+  // Fetch user carts 
+  useEffect(() => {
+    const fetchCarts = async () => {
+      if (!user || user.id == null ) {
+        console.log("Skipping cart fetch")
+        setUserCarts([])
+        return
+      }
+      
+      try {
+        const cartRes = await axios.get("https://fakestoreapi.com/carts")
+        const filteredCarts = cartRes.data.filter(cart => cart.userId === user.id)
+
+        const cartsWithDetails = filteredCarts.map(cart => ({
+          ...cart,
+          products: cart.products.map(p => {
+            const fullProduct = products.find(fp => fp.id === p.productId)
+            if (!fullProduct) {
+              console.warn(`No product found for productId ${p.productId}`)
+              return { ...p, title: "Unknown Product", price: 0 }
+            }
+            return {
+              ...p,
+              ...fullProduct,
+            }
+          }),
+        }))
+
+        console.log(cartsWithDetails)
+        setUserCarts(cartsWithDetails)
+      } catch (err) {
+        console.error("Error fetching carts:", err)
+        setError(prev => prev ? prev + " Failed to load carts." : "Failed to load carts.")
+        setUserCarts([])
+      }
+    }
+    fetchCarts()
+  }, [user, products]) 
+
 
   const openModal = (product) => {
     setSelectedProduct(product)
@@ -151,6 +193,30 @@ function App() {
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
       />
+
+      {userCarts.length > 0 && (
+        <div className="my-10">
+          <h2 className="text-xl font-bold mb-4">Your Cart History</h2>
+          {userCarts.map((cart) => (
+            <div key={cart.id} className="text-black mb-6 border p-4 rounded bg-white shadow-sm">
+              <h3 className="font-semibold mb-2">Cart ID: {cart.id}</h3>
+              {cart.products.map((product, index) => (
+                <div key={`${cart.id}-${index}`} className="flex items-center gap-4 mb-3">
+                  <img src={product.image} alt={product.title} className="w-12 h-12 object-contain" />
+                  <div>
+                    <p className="font-medium">{product.title}</p>
+                    <p className="text-sm text-gray-600">
+                      ${product.price?.toFixed(2)} × {product.quantity}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+
 
     </div>
   )
