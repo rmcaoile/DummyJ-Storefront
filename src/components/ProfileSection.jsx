@@ -29,7 +29,13 @@ const ProfileSection = () => {
 
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-80  bg-gray-600">
+      <PopoverContent
+        side="bottom"
+        align="end"
+        className="w-80 bg-gray-600 text-white relative"
+      >
+        <div className="absolute -top-2 right-5 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-600" />
+
         {/* TODO: fix ui */}
         {user ? (
           <div className="space-y-3">
