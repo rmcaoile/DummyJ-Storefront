@@ -125,7 +125,10 @@ function App() {
           <Button
             key={category}
             variant={categoryFilter === category ? "default" : "outline"}
-            onClick={() => setCategoryFilter(category)}
+            onClick={() => 
+              setCategoryFilter((prev) =>
+                prev === category ? "All" : category
+              )}
           >
             {category}
           </Button>
