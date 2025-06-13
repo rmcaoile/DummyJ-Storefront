@@ -1,21 +1,15 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "@/context/Auth"
-import ProfileSection from "@/components/ProfileSection"
 import axios from "axios"
+import ProfileSection from "@/components/ProfileSection"
+import ProductModal from "@/components/ProductModal"
+import ProductCard from "@/components/ProductCard"
+import SearchBar from "@/components/SearchBar"
 
 import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
-import { Alert, AlertDescription, AlertTitle } from "@/components/components/ui/alert"
 import { Button } from "@/components/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/components/ui/avatar"
 import { ShoppingCart, Search } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/components/ui/dialog"
 
 
 function App() {
@@ -59,18 +53,6 @@ function App() {
     setIsModalOpen(true)
   }
 
-  
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      setSearchTerm(searchInput)
-    }
-  }
-  // const filteredProducts = products.filter((product) =>
-  //   (product.title + " " + product.category)
-  //     .toLowerCase()
-  //     .includes(searchTerm.toLowerCase())
-  // )
-  
   const categories = ["All", ...new Set(products.map((p) => p.category))]
 
   const filteredProducts = products.filter((product) => {
@@ -88,26 +70,15 @@ function App() {
     <div className="p-6 px-20">
 
       <div className="flex flex-row justify-between items-center mb-10 mt-5">      
-
         {/* Store Name */}
         <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
 
         {/* Search Bar */}
-        <div className="flex flex-1 items-center ">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="w-full max-w-md p-2 border border-gray-300 border-r-0 rounded-l-md shadow-sm "
-          />
-          <div 
-            className="bg-white flex items-center justify-center p-2 cursor-pointer border border-gray-300 border-l-0 rounded-r-md shadow-sm"
-            onClick={() => setSearchTerm(searchInput)}>
-            <Search  className="text-black"/>
-          </div>
-        </div>
+        <SearchBar
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          onSearch={() => setSearchTerm(searchInput)}
+        />
 
         <div className="flex flex-1 justify-end items-center gap-8">  
           {/* Profile Section */}
@@ -119,9 +90,7 @@ function App() {
             <ShoppingCart className="w-7 h-7 text-white cursor-pointer" />
           </div>
         </div>
-
       </div>
-
 
 
       {/* Categories */}
@@ -141,6 +110,7 @@ function App() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        {/* Skeleton for loading */}
         {loading ? (
           [...Array(12)].map((_, i) => (
             <Card key={i} className="pt-5 pb-2 bg-white">
@@ -166,46 +136,22 @@ function App() {
           </div>
         ) : (
           filteredProducts.map((product) => (
-            <Card
+            <ProductCard
               key={product.id}
+              product={product}
               onClick={() => openModal(product)}
-              className="transition duration-300 transform hover:-translate-y-2 hover:scale-105 hover:shadow-lg bg-white cursor-pointer pt-5 pb-2"
-            >
-              <CardContent className="p-4 space-y-2 text-black">
-                <img src={product.image} alt={product.title} className="w-full h-48 object-contain" />
-                <CardTitle className="text-base mt-5">{product?.title || "N/A"}</CardTitle>
-                <p className="text-sm text-muted-foreground">Price: ${product?.price ?? "N/A"}</p>
-                <p className="text-sm text-muted-foreground">Category: {product?.category || "N/A"}</p>
-                <p className="text-sm text-green-600 font-medium">Rating: {product?.rating?.rate ?? "N/A"}</p>
-              </CardContent>
-            </Card>
+            />
           ))
         )}
-
       </div>
 
       {/* Product Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="!max-w-4xl bg-white text-black">
-          {selectedProduct && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selectedProduct.title}</DialogTitle>
-              </DialogHeader>
-              <img
-                src={selectedProduct?.image || ""}
-                alt={selectedProduct?.title || "N/A"}
-                className="w-full h-60 object-contain mt-5 mb-4"
-              />
-              <p><strong>Price:</strong> ${selectedProduct?.price ?? "N/A"}</p>
-              <p><strong>Category:</strong> {selectedProduct?.category || "N/A"}</p>
-              <p><strong>Rating:</strong> {selectedProduct?.rating?.rate ?? "N/A"} </p>
-              <p><strong>Description:</strong> {selectedProduct?.description || "N/A"}</p>
-              <p><strong>Available Stock:</strong> {selectedProduct?.rating?.count ?? "N/A"}</p>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={setIsModalOpen}
+      />
+
     </div>
   )
 }
