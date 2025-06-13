@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/components/ui/alert"
 import { Button } from "@/components/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/components/ui/avatar"
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart, Search } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -93,15 +93,20 @@ function App() {
         <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
 
         {/* Search Bar */}
-        <div className="flex flex-1 ">
+        <div className="flex flex-1 items-center ">
           <input
             type="text"
             placeholder="Search products..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full max-w-md p-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full max-w-md p-2 border border-gray-300 border-r-0 rounded-l-md shadow-sm "
           />
+          <div 
+            className="bg-white flex items-center justify-center p-2 cursor-pointer border border-gray-300 border-l-0 rounded-r-md shadow-sm"
+            onClick={() => setSearchTerm(searchInput)}>
+            <Search  className="text-black"/>
+          </div>
         </div>
 
         <div className="flex flex-1 justify-end items-center gap-8">  
