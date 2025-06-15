@@ -111,6 +111,46 @@ function App() {
     return matchesSearch && matchesCategory
   })
 
+  const handleAddToCart = async (productId) => {
+    if (!user || !user.id) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+
+    try {
+      const latestCart = userCarts[0];
+
+      let updatedCart;
+      if (latestCart) {
+        // Add product to existing cart
+        const updatedProducts = [...latestCart.products, { productId, quantity: 1 }];
+        updatedCart = {
+          userId: user.id,
+          date: new Date().toISOString().split("T")[0],
+          products: updatedProducts.map(p => ({
+            productId: p.productId || p.id,
+            quantity: p.quantity || 1
+          }))
+        };
+        await axios.put(`https://fakestoreapi.com/carts/${latestCart.id}`, updatedCart);
+      } else {
+        // Create new cart
+        updatedCart = {
+          userId: user.id,
+          date: new Date().toISOString().split("T")[0],
+          products: [{ productId, quantity: 1 }]
+        };
+        await axios.post("https://fakestoreapi.com/carts", updatedCart);
+      }
+
+      alert("Product added to cart!");
+    } catch (err) {
+      console.error("Failed to add to cart", err);
+      alert("Something went wrong adding to cart.");
+    }
+  };
+
+
   return (
     <div className="p-6 px-20">
       <div className="flex flex-row justify-between items-center mb-10 mt-5">
@@ -205,11 +245,15 @@ function App() {
           </div>
         ) : (
           filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onClick={() => openModal(product)}
-            />
+            filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onClick={() => openModal(product)}
+                onAddToCart={handleAddToCart}
+              />
+            ))
+
           ))
         )}
       </div>
