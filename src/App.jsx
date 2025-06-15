@@ -1,17 +1,24 @@
-import { useState, useEffect } from "react"
-import { useAuth } from "@/context/Auth"
+import { useState, useEffect, useCallback } from "react"
 import axios from "axios"
-import ProfileSection from "@/components/ProfileSection"
+import { ShoppingCart } from "lucide-react"
+
+import { useAuth } from "@/context/Auth"
 import ProductModal from "@/components/ProductModal"
 import ProductCard from "@/components/ProductCard"
+import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 
 import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
 import { Button } from "@/components/components/ui/button"
 import { Badge } from "@/components/components/ui/badge"
-import { ShoppingCart, Search } from "lucide-react"
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/components/ui/sheet"
 
 function App() {
   const { user } = useAuth()
@@ -21,24 +28,21 @@ function App() {
   const [error, setError] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
   const [searchInput, setSearchInput] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
-
   const [userCarts, setUserCarts] = useState([])
 
-  // Fetch products 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true)
       setError(null)
 
       try {
-        const productRes = await axios.get("https://fakestoreapi.com/products")
-        if (!Array.isArray(productRes.data)) throw new Error("No products found.")
-        console.log(productRes.data)
-        setProducts(productRes.data)
+        const res = await axios.get("https://fakestoreapi.com/products")
+        if (!Array.isArray(res.data)) throw new Error("No products found.")
+        setProducts(res.data)
       } catch (err) {
         console.error("Error fetching products:", err)
         setError("Failed to load products.")
@@ -48,26 +52,25 @@ function App() {
     }
 
     fetchProducts()
-  }, []) 
+  }, [])
 
-
-  // Fetch user carts 
+  // Fetch user carts
   useEffect(() => {
     const fetchCarts = async () => {
-      if (!user || user.id == null ) {
+      if (!user || user.id == null) {
         console.log("Skipping cart fetch")
         setUserCarts([])
         return
       }
-      
+
       try {
         const cartRes = await axios.get("https://fakestoreapi.com/carts")
-        const filteredCarts = cartRes.data.filter(cart => cart.userId === user.id)
+        const filteredCarts = cartRes.data.filter((cart) => cart.userId === user.id)
 
-        const cartsWithDetails = filteredCarts.map(cart => ({
+        const cartsWithDetails = filteredCarts.map((cart) => ({
           ...cart,
-          products: cart.products.map(p => {
-            const fullProduct = products.find(fp => fp.id === p.productId)
+          products: cart.products.map((p) => {
+            const fullProduct = products.find((fp) => fp.id === p.productId)
             if (!fullProduct) {
               console.warn(`No product found for productId ${p.productId}`)
               return { ...p, title: "Unknown Product", price: 0 }
@@ -79,26 +82,23 @@ function App() {
           }),
         }))
 
-        console.log(cartsWithDetails)
         setUserCarts(cartsWithDetails)
       } catch (err) {
         console.error("Error fetching carts:", err)
-        setError(prev => prev ? prev + " Failed to load carts." : "Failed to load carts.")
+        setError((prev) => (prev ? prev + " Failed to load carts." : "Failed to load carts."))
         setUserCarts([])
       }
     }
-    fetchCarts()
-  }, [user, products]) 
 
-  const openModal = (product) => {
+    fetchCarts()
+  }, [user, products])
+
+  const openModal = useCallback((product) => {
     setSelectedProduct(product)
     setIsModalOpen(true)
-  }
+  }, [])
 
-  const totalCartItems = userCarts.reduce((total, cart) => {
-    return total + cart.products.length
-  }, 0)
-
+  const totalCartItems = userCarts.reduce((total, cart) => total + cart.products.length, 0)
   const categories = ["All", ...new Set(products.map((p) => p.category))]
 
   const filteredProducts = products.filter((product) => {
@@ -111,59 +111,75 @@ function App() {
     return matchesSearch && matchesCategory
   })
 
-
   return (
     <div className="p-6 px-20">
-
-      <div className="flex flex-row justify-between items-center mb-10 mt-5">      
-        {/* Store Name */}
+      <div className="flex flex-row justify-between items-center mb-10 mt-5">
         <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
 
-        {/* Search Bar */}
         <SearchBar
           searchInput={searchInput}
           setSearchInput={setSearchInput}
           onSearch={() => setSearchTerm(searchInput)}
         />
 
-        <div className="flex flex-1 justify-end items-center gap-8">  
-          {/* Profile Section */}
+        <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
 
-          {/* Shopping Cart */}
-          <div className="cursor-pointer relative group">
-            <ShoppingCart className="w-7 h-7 text-white" />
-            <Badge
-              className="absolute -top-2 -right-3 bg-white text-black h-5 min-w-5 rounded-full px-1 font-mono tabular-nums 
-                        transition-transform duration-200 ease-in-out 
-                        group-hover:scale-110"
-            >
-              {totalCartItems}
-            </Badge>
-          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <div className="cursor-pointer relative group">
+                <ShoppingCart className="w-7 h-7 text-white" />
+                <Badge className="absolute -top-2 -right-3 bg-white text-black h-5 min-w-5 rounded-full px-1 font-mono tabular-nums group-hover:scale-110 transition-transform duration-200">
+                  {totalCartItems}
+                </Badge>
+              </div>
+            </SheetTrigger>
 
+            <SheetContent side="right" className="w-[400px] sm:w-[500px] overflow-y-auto bg-[#242424]">
+              <SheetHeader>
+                <SheetTitle>Your Cart History</SheetTitle>
+              </SheetHeader>
+
+              {userCarts.length === 0 ? (
+                <div className="mt-4 text-gray-500 text-center">No cart history found.</div>
+              ) : (
+                userCarts.map((cart) => (
+                  <div key={cart.id} className="text-black mb-6 border p-4 rounded bg-white shadow-sm mx-5">
+                    <h3 className="font-semibold mb-2">Cart ID: {cart.id}</h3>
+                    {cart.products.map((product, index) => (
+                      <div key={`${cart.id}-${index}`} className="flex items-center gap-4 mb-3">
+                        <img src={product.image} alt={product.title} className="w-12 h-12 object-contain" />
+                        <div>
+                          <p className="font-medium">{product.title}</p>
+                          <p className="text-sm text-gray-600">${product.price?.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )}
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
-
-      {/* Categories */}
+      {/* Category Filters */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
         {categories.map((category) => (
           <Button
             key={category}
             variant={categoryFilter === category ? "default" : "outline"}
-            onClick={() => 
-              setCategoryFilter((prev) =>
-                prev === category ? "All" : category
-              )}
+            onClick={() =>
+              setCategoryFilter((prev) => (prev === category ? "All" : category))
+            }
           >
             {category}
           </Button>
         ))}
       </div>
 
+      {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {/* Skeleton for loading */}
         {loading ? (
           [...Array(12)].map((_, i) => (
             <Card key={i} className="pt-5 pb-2 bg-white">
@@ -204,30 +220,6 @@ function App() {
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
       />
-
-      {userCarts.length > 0 && (
-        <div className="my-10">
-          <h2 className="text-xl font-bold mb-4">Your Cart History</h2>
-          {userCarts.map((cart) => (
-            <div key={cart.id} className="text-black mb-6 border p-4 rounded bg-white shadow-sm">
-              <h3 className="font-semibold mb-2">Cart ID: {cart.id}</h3>
-              {cart.products.map((product, index) => (
-                <div key={`${cart.id}-${index}`} className="flex items-center gap-4 mb-3">
-                  <img src={product.image} alt={product.title} className="w-12 h-12 object-contain" />
-                  <div>
-                    <p className="font-medium">{product.title}</p>
-                    <p className="text-sm text-gray-600">
-                      ${product.price?.toFixed(2)} × {product.quantity}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
-
-
 
     </div>
   )
