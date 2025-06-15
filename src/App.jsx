@@ -9,6 +9,7 @@ import SearchBar from "@/components/SearchBar"
 import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
 import { Button } from "@/components/components/ui/button"
+import { Badge } from "@/components/components/ui/badge"
 import { ShoppingCart, Search } from "lucide-react"
 
 
@@ -89,11 +90,14 @@ function App() {
     fetchCarts()
   }, [user, products]) 
 
-
   const openModal = (product) => {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }
+
+  const totalCartItems = userCarts.reduce((total, cart) => {
+    return total + cart.products.length
+  }, 0)
 
   const categories = ["All", ...new Set(products.map((p) => p.category))]
 
@@ -127,10 +131,17 @@ function App() {
           <ProfileSection />
 
           {/* Shopping Cart */}
-          <div>
-            {/* TODO: Badge */}
-            <ShoppingCart className="w-7 h-7 text-white cursor-pointer" />
+          <div className="cursor-pointer relative group">
+            <ShoppingCart className="w-7 h-7 text-white" />
+            <Badge
+              className="absolute -top-2 -right-3 bg-white text-black h-5 min-w-5 rounded-full px-1 font-mono tabular-nums 
+                        transition-transform duration-200 ease-in-out 
+                        group-hover:scale-110"
+            >
+              {totalCartItems}
+            </Badge>
           </div>
+
         </div>
       </div>
 
