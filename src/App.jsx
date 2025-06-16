@@ -265,6 +265,7 @@ function App() {
         product={selectedProduct}
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
+        onAddToCart={handleAddToCart}
       />
 
     </div>
