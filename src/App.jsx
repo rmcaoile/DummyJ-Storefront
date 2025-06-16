@@ -245,15 +245,12 @@ function App() {
           </div>
         ) : (
           filteredProducts.map((product) => (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onClick={() => openModal(product)}
-                onAddToCart={handleAddToCart}
-              />
-            ))
-
+            <ProductCard
+              key={product.id}
+              product={product}
+              onClick={() => openModal(product)}
+              onAddToCart={handleAddToCart}
+            />
           ))
         )}
       </div>
