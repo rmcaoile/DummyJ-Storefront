@@ -29,7 +29,7 @@ function CartSection({ userCarts }) {
 
       <SheetContent
         side="right"
-        className="w-[400px] sm:w-[500px] overflow-y-auto bg-[#242424]"
+        className="w-[400px] sm:w-[500px] overflow-y-auto bg-[#242424] "
       >
         <SheetHeader>
           <SheetTitle>Your Cart History</SheetTitle>
@@ -56,9 +56,12 @@ function CartSection({ userCarts }) {
                   />
                   <div>
                     <p className="font-medium">{product.title}</p>
-                    <p className="text-sm text-gray-600">${product.price?.toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">
+                        ${product.price?.toFixed(2)} × {product.quantity || 1} = $
+                        {(product.price * (product.quantity || 1)).toFixed(2)}
+                    </p>
                   </div>
-                </div>
+                </div>                
               ))}
             </div>
           ))

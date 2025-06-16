@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import axios from "axios"
-import { ShoppingCart } from "lucide-react"
 
 import { useAuth } from "@/context/Auth"
 import ProductModal from "@/components/ProductModal"
@@ -74,8 +73,8 @@ function App() {
           products: cart.products.map((p) => {
             const full = products.find((fp) => fp.id === p.productId);
             return full
-              ? { ...p, ...full }
-              : { ...p, title: "Unknown Product", price: 0 };
+              ? { ...full, quantity: p.quantity || 1 }
+              : { id: p.productId, title: "Unknown Product", price: 0, quantity: p.quantity || 1 };
           }),
         }));
 
@@ -143,20 +142,50 @@ function App() {
     if (cartIndex !== -1) {
       // Add to existing cart
       const existingCart = { ...userCarts[cartIndex] };
-      existingCart.products.push(product);
+      const existingProductIndex = existingCart.products.findIndex(
+        (p) => p.id === productId
+      );
+
+      // If item already exist
+      if (existingProductIndex !== -1) {
+        // Increase quantity
+        existingCart.products[existingProductIndex].quantity += 1;
+      } else {
+        // Add new product with quantity 1
+        existingCart.products.push({ ...product, quantity: 1 });
+      }
+
       updatedCarts = [...userCarts];
       updatedCarts[cartIndex] = existingCart;
+      
+      // console.log(updatedCarts);
+      // For exercise — send PUT to update the cart in fakestoreapi
+      axios.put(`https://fakestoreapi.com/carts/${existingCart.id}`, {
+        id: existingCart.id,
+        userId: existingCart.userId,
+        products: existingCart.products
+      })
+      .then(response => console.log("Cart updated:", response.data))
+      .catch(err => console.error("Failed to update cart:", err));
+
     } else {
       // Create new cart
       const newCart = {
         id: Date.now(), // local ID
         userId: user.id,
         date: today,
-        products: [product],
+        products: [{ ...product, quantity: 1 }],
       };
-      updatedCarts = [newCart, ...userCarts];
+      updatedCarts = [newCart, ...userCarts];      
+      console.log(updatedCarts);
+
+      // For exercise
+      axios.post('https://fakestoreapi.com/carts', updatedCarts[0])
+        .then(response => console.log("Added new cart", response.data))
+        .catch(err => console.error("Failed to add new cart:", err));
     }
     
+    // Local Storage save
     setUserCarts(updatedCarts);
   };
 
