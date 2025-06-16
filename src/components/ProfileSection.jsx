@@ -52,12 +52,12 @@ const ProfileSection = () => {
             >
               My Profile
             </div>
-            <div
+            {/* <div
               className="px-4 py-2 hover:bg-gray-100 transition duration-150 ease-in-out hover:text-black hover:font-semibold cursor-pointer "
               onClick={() => console.log("My Orders clicked")}
             >
               My Orders
-            </div>
+            </div> */}
             <div
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out hover:text-black hover:font-medium font-medium hover:text-red-600"
               onClick={logout}

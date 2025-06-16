@@ -204,7 +204,7 @@ function App() {
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
 
-          <CartSection userCarts={userCarts} />
+          <CartSection userCarts={userCarts} setUserCarts={setUserCarts}/>
         </div>
       </div>
 

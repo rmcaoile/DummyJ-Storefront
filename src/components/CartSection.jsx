@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart, Plus, Minus, Trash } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
 import {
   Sheet,
@@ -7,11 +7,34 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/components/ui/sheet"
+import { Button } from "@/components/components/ui/button"
 
-function CartSection({ userCarts }) {
+function CartSection({ userCarts, setUserCarts }) {
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
   );
+
+  const handleQuantityChange = (cartId, productId, delta) => {
+    const updatedCarts = userCarts.map(cart => {
+      if (cart.id !== cartId) return cart
+      const updatedProducts = cart.products.map(p => {
+        if (p.id !== productId) return p
+        const newQuantity = Math.max((p.quantity || 1) + delta, 1)
+        return { ...p, quantity: newQuantity }
+      })
+      return { ...cart, products: updatedProducts }
+    })
+    setUserCarts(updatedCarts)
+  }
+
+  const handleRemoveProduct = (cartId, productId) => {
+    const updatedCarts = userCarts.map(cart => {
+      if (cart.id !== cartId) return cart
+      const updatedProducts = cart.products.filter(p => p.id !== productId)
+      return { ...cart, products: updatedProducts }
+    })
+    setUserCarts(updatedCarts)
+  }
 
   return (
     <Sheet>
@@ -53,12 +76,33 @@ function CartSection({ userCarts }) {
                       alt={product.title}
                       className="w-12 h-12 object-contain"
                     />
-                    <div>
-                      <p className="font-medium">{product.title}</p>
-                      <p className="text-sm text-gray-600">
-                        ${product.price?.toFixed(2)} × {product.quantity || 1} = $
-                        {(product.price * (product.quantity || 1)).toFixed(2)}
-                      </p>
+                    {/* TODO: fix ui */}
+                    <div className="flex-1 flex-column">
+                      <div>
+                        <p className="font-medium">{product.title}</p>
+                        <p className="text-sm text-gray-600">
+                          ${product.price?.toFixed(2)} × {product.quantity || 1} = $
+                          {(product.price * (product.quantity || 1)).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-row items-center gap-2">
+                        <div className="flex items-center gap-2 mt-2">
+                          <Button size="icon" variant="outline" onClick={() => handleQuantityChange(cart.id, product.id, -1)}>
+                            <Minus className="w-4 h-4 text-white" />
+                          </Button>
+                          <span>{product.quantity || 1}</span>
+                          <Button size="icon" variant="outline" onClick={() => handleQuantityChange(cart.id, product.id, 1)}>
+                            <Plus className="w-4 h-4 text-white" />
+                          </Button>
+                        </div>
+
+                        <div className="cursor-pointer">
+                          <p size="icon" variant="destructive" onClick={() => handleRemoveProduct(cart.id, product.id)}>
+                            Remove
+                          </p>                          
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
