@@ -7,6 +7,8 @@ import LoginForm from "@/components/LoginForm"
 import { useAuth } from "@/context/Auth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/components/ui/avatar"
 import { Button } from "@/components/components/ui/button"
+import { ChevronDown } from "lucide-react";
+
 
 const ProfileSection = () => {
   const { user, logout } = useAuth()
@@ -22,27 +24,46 @@ const ProfileSection = () => {
             />
             <AvatarFallback>pfp</AvatarFallback>
           </Avatar>
-          <div>
-            {!user && <p className="text-sm">Login / Signup</p>}
-            <p className="font-bold">{user ? user.username : "Profile"}</p>
-          </div>
-
+            <div className="flex items-center gap-1">
+              <div>
+                <p className="text-sm">{user ? "Hello" : "Login / Signup"}</p>
+                <p className="font-bold flex items-center gap-1">
+                  {user ? user.username : "Profile"}
+                  <ChevronDown className="w-4 h-4" />
+                </p>
+              </div>
+            </div>
         </div>
       </PopoverTrigger>
       <PopoverContent
         side="bottom"
         align="end"
-        className="w-80 bg-gray-600 text-white relative"
+        className={`relative bg-gray-600 text-white -mr-7 ${
+          user ? "w-40 px-0 py-2" : "w-80"
+        }`}
       >
-        <div className="absolute -top-2 right-5 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-600" />
+        <div className={`absolute -top-2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-600 ${user ? "right-6.5" : "right-11.5"}`} />
 
-        {/* TODO: fix ui */}
         {user ? (
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Welcome, {user.username}</p>
-            <Button variant="outline" onClick={logout}>
+          <div className=" text-sm">
+            <div
+              className="px-4 py-2 hover:bg-gray-100 transition duration-150 ease-in-out hover:text-black hover:font-semibold cursor-pointer "
+              onClick={() => console.log("My Addresses clicked")}
+            >
+              My Profile
+            </div>
+            <div
+              className="px-4 py-2 hover:bg-gray-100 transition duration-150 ease-in-out hover:text-black hover:font-semibold cursor-pointer "
+              onClick={() => console.log("My Orders clicked")}
+            >
+              My Orders
+            </div>
+            <div
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out hover:text-black hover:font-medium font-medium hover:text-red-600"
+              onClick={logout}
+            >
               Logout
-            </Button>
+            </div>
           </div>
         ) : (
           <LoginForm />
