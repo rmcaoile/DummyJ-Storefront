@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import axios from "axios"
 import { ShoppingCart } from "lucide-react"
 
@@ -31,7 +31,7 @@ function App() {
   const [searchInput, setSearchInput] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
-  const [userCarts, setUserCarts] = useState([])
+  const [userCarts, setUserCarts] = useState([]);
 
   // Fetch products
   useEffect(() => {
@@ -56,42 +56,55 @@ function App() {
 
   // Fetch user carts
   useEffect(() => {
-    const fetchCarts = async () => {
-      if (!user || user.id == null) {
-        console.log("Skipping cart fetch")
-        setUserCarts([])
-        return
+    const loadCarts = async () => {
+      if (!user || !user.id) {
+        setUserCarts([]);
+        return;
       }
 
-      try {
-        const cartRes = await axios.get("https://fakestoreapi.com/carts")
-        const filteredCarts = cartRes.data.filter((cart) => cart.userId === user.id)
+      // Per-user key
+      const localKey = `userCarts-${user.id}`;
+      const saved = JSON.parse(localStorage.getItem(localKey)) || [];
 
-        const cartsWithDetails = filteredCarts.map((cart) => ({
+      if (saved.length > 0) {
+        setUserCarts(saved);
+        return;
+      }
+
+      // Fetch using API if no local data
+      try {
+        const cartRes = await axios.get("https://fakestoreapi.com/carts");
+        const filtered = cartRes.data.filter((cart) => cart.userId === user.id);
+
+        const apiUserCarts = filtered.map((cart) => ({
           ...cart,
           products: cart.products.map((p) => {
-            const fullProduct = products.find((fp) => fp.id === p.productId)
-            if (!fullProduct) {
-              console.warn(`No product found for productId ${p.productId}`)
-              return { ...p, title: "Unknown Product", price: 0 }
-            }
-            return {
-              ...p,
-              ...fullProduct,
-            }
+            const full = products.find((fp) => fp.id === p.productId);
+            return full
+              ? { ...p, ...full }
+              : { ...p, title: "Unknown Product", price: 0 };
           }),
-        }))
+        }));
 
-        setUserCarts(cartsWithDetails)
+        setUserCarts(apiUserCarts);
       } catch (err) {
-        console.error("Error fetching carts:", err)
-        setError((prev) => (prev ? prev + " Failed to load carts." : "Failed to load carts."))
-        setUserCarts([])
+        console.error("Failed to fetch API carts", err);
+        setUserCarts([]);
       }
-    }
+    };
 
-    fetchCarts()
-  }, [user, products])
+    loadCarts();
+  }, [user, products]);
+
+  
+  // Saving user carts to local storage
+  useEffect(() => {
+    if (user && user.id) {
+      const localKey = `userCarts-${user.id}`;
+      localStorage.setItem(localKey, JSON.stringify(userCarts));
+    }
+  }, [user, userCarts]);
+
 
   const openModal = useCallback((product) => {
     setSelectedProduct(product)
@@ -99,6 +112,7 @@ function App() {
   }, [])
 
   const totalCartItems = userCarts.reduce((total, cart) => total + cart.products.length, 0)
+
   const categories = ["All", ...new Set(products.map((p) => p.category))]
 
   const filteredProducts = products.filter((product) => {
@@ -111,43 +125,48 @@ function App() {
     return matchesSearch && matchesCategory
   })
 
+  
   const handleAddToCart = async (productId) => {
+    console.log("Add to Cart clicked for product ID:", productId);
+
     if (!user || !user.id) {
       alert("Please log in to add items to your cart.");
       return;
     }
-
-    try {
-      const latestCart = userCarts[0];
-
-      let updatedCart;
-      if (latestCart) {
-        // Add product to existing cart
-        const updatedProducts = [...latestCart.products, { productId, quantity: 1 }];
-        updatedCart = {
-          userId: user.id,
-          date: new Date().toISOString().split("T")[0],
-          products: updatedProducts.map(p => ({
-            productId: p.productId || p.id,
-            quantity: p.quantity || 1
-          }))
-        };
-        await axios.put(`https://fakestoreapi.com/carts/${latestCart.id}`, updatedCart);
-      } else {
-        // Create new cart
-        updatedCart = {
-          userId: user.id,
-          date: new Date().toISOString().split("T")[0],
-          products: [{ productId, quantity: 1 }]
-        };
-        await axios.post("https://fakestoreapi.com/carts", updatedCart);
-      }
-
-      alert("Product added to cart!");
-    } catch (err) {
-      console.error("Failed to add to cart", err);
-      alert("Something went wrong adding to cart.");
+    
+    const product = products.find(p => p.id === productId);
+    if (!product) {
+      alert("Product not found.");
+      return;
     }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // Check if a cart already exists for today
+    const cartIndex = userCarts.findIndex(
+      (cart) => cart.userId === user.id && cart.date === today
+    );
+
+    let updatedCarts;
+
+    if (cartIndex !== -1) {
+      // Add to existing cart
+      const existingCart = { ...userCarts[cartIndex] };
+      existingCart.products.push(product);
+      updatedCarts = [...userCarts];
+      updatedCarts[cartIndex] = existingCart;
+    } else {
+      // Create new cart
+      const newCart = {
+        id: Date.now(), // local ID
+        userId: user.id,
+        date: today,
+        products: [product],
+      };
+      updatedCarts = [newCart, ...userCarts];
+    }
+    
+    setUserCarts(updatedCarts);
   };
 
 
