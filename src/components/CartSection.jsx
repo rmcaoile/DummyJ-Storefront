@@ -15,25 +15,31 @@ function CartSection({ userCarts, setUserCarts }) {
   );
 
   const handleQuantityChange = (cartId, productId, delta) => {
-    const updatedCarts = userCarts.map(cart => {
-      if (cart.id !== cartId) return cart
-      const updatedProducts = cart.products.map(p => {
-        if (p.id !== productId) return p
-        const newQuantity = Math.max((p.quantity || 1) + delta, 1)
-        return { ...p, quantity: newQuantity }
+    const updatedCarts = userCarts
+      .map(cart => {
+        if (cart.id !== cartId) return cart
+        let updatedProducts = cart.products.map(p => {
+          if (p.id !== productId) return p
+          const currentQuantity = p.quantity || 1
+          const newQuantity = currentQuantity + delta
+          if (newQuantity < 1) return null;     // If minus is selected while quantity is 1 return null
+          return { ...p, quantity: newQuantity }
+        }).filter(p => p !== null)              // Remove item in cart if quantity is zero
+        return { ...cart, products: updatedProducts }
       })
-      return { ...cart, products: updatedProducts }
-    })
+      .filter(cart => cart.products.length > 0);   // Remove cart if there are no more items
     setUserCarts(updatedCarts)
   }
 
   const handleRemoveProduct = (cartId, productId) => {
-    const updatedCarts = userCarts.map(cart => {
-      if (cart.id !== cartId) return cart
-      const updatedProducts = cart.products.filter(p => p.id !== productId)
-      return { ...cart, products: updatedProducts }
-    })
-    setUserCarts(updatedCarts)
+    const updatedCarts = userCarts
+      .map(cart => {
+        if (cart.id !== cartId) return cart
+        const updatedProducts = cart.products.filter(p => p.id !== productId)
+        return { ...cart, products: updatedProducts }
+      })
+      .filter(cart => cart.products.length > 0); 
+    setUserCarts(updatedCarts)   // Remove cart if there are no more items
   }
 
   return (
@@ -122,14 +128,16 @@ function CartSection({ userCarts, setUserCarts }) {
         </div>
 
         {/* View Cart button */}
-        <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
-          <Button
-            className="w-full py-2 px-4 bg-white text-black rounded font-semibold hover:bg-gray-700 hover:text-white transition-colors duration-300"
-            onClick={() => console.log("Navigating to full cart page")}
-          >
-            View Cart
-          </Button>
-        </div>
+        {userCarts.length > 0 &&
+            <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
+              <Button
+                className="w-full py-2 px-4 bg-white text-black rounded font-semibold hover:bg-gray-700 hover:text-white transition-colors duration-200"
+                onClick={() => console.log("Navigating to full cart page")}
+              >
+                View Cart
+              </Button>
+            </div>          
+        }
       </SheetContent>
     </Sheet>
   );
