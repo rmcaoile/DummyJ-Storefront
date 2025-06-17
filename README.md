@@ -1,4 +1,4 @@
-# React Weather App
+# Fake Store App
 
 A responsive and dynamic E-Commerce web application built with React that fetches and displays products from the FakeStore API. Users can search for products, filter by category, and view detailed product information in a modal.
 
