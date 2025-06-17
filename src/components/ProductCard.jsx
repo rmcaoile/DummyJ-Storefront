@@ -13,7 +13,7 @@ function ProductCard({ product, onClick, onAddToCart }) {
         <p className="text-sm text-muted-foreground">Price: ${product.price ?? "N/A"}</p>
         <p className="text-sm text-muted-foreground">Category: {product.category || "N/A"}</p>
         <p className="text-sm text-green-600 font-medium">Rating: {product.rating?.rate ?? "N/A"}</p>
-        <Button onClick={(e) => { e.stopPropagation(); onAddToCart(product.id); }} className="w-full mt-3 cursor-pointer text-white">
+        <Button onClick={(e) => { e.stopPropagation(); onAddToCart(product.id); }} className="w-full mt-3 cursor-pointer bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">
           Add to Cart
         </Button>
       </CardContent>

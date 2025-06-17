@@ -213,10 +213,11 @@ function App() {
         {categories.map((category) => (
           <Button
             key={category}
-            variant={categoryFilter === category ? "default" : "outline"}
+            variant={categoryFilter === category ? "outline" : "default"}
             onClick={() =>
               setCategoryFilter((prev) => (prev === category ? "All" : category))
             }
+            className="cursor-pointer"
           >
             {category}
           </Button>

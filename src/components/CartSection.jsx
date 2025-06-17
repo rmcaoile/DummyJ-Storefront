@@ -77,32 +77,42 @@ function CartSection({ userCarts, setUserCarts }) {
                       className="w-12 h-12 object-contain"
                     />
                     {/* TODO: fix ui */}
-                    <div className="flex-1 flex-column">
-                      <div>
+                    <div className="flex flex-row justify-between items-center w-full">
+                      <div className="flex-1">
                         <p className="font-medium">{product.title}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-800">
                           ${product.price?.toFixed(2)} × {product.quantity || 1} = $
                           {(product.price * (product.quantity || 1)).toFixed(2)}
                         </p>
                       </div>
 
-                      <div className="flex flex-row items-center gap-2">
-                        <div className="flex items-center gap-2 mt-2">
-                          <Button size="icon" variant="outline" onClick={() => handleQuantityChange(cart.id, product.id, -1)}>
-                            <Minus className="w-4 h-4 text-white" />
-                          </Button>
+                      <div className="flex flex-col items-center  ml-4">
+                        <div className="flex items-center gap-2 border border-gray-500 rounded">
+                          <div
+                            className="p-2 hover:bg-gray-200 rounded transition duration-200"
+                            onClick={() => handleQuantityChange(cart.id, product.id, -1)}
+                          >
+                            <Minus className="w-3 h-3 text-gray-900" />
+                          </div>
                           <span>{product.quantity || 1}</span>
-                          <Button size="icon" variant="outline" onClick={() => handleQuantityChange(cart.id, product.id, 1)}>
-                            <Plus className="w-4 h-4 text-white" />
-                          </Button>
+                          <div
+                            className="p-2 hover:bg-gray-200 rounded transition duration-200"
+                            onClick={() => handleQuantityChange(cart.id, product.id, 1)}
+                          >
+                            <Plus className="w-3 h-3 text-gray-900" />
+                          </div>
                         </div>
 
                         <div className="cursor-pointer">
-                          <p size="icon" variant="destructive" onClick={() => handleRemoveProduct(cart.id, product.id)}>
+                          <p
+                            className="text-gray-900 text-sm hover:text-red-500 transition duration-200"
+                            onClick={() => handleRemoveProduct(cart.id, product.id)}
+                          >
                             Remove
-                          </p>                          
+                          </p>
                         </div>
                       </div>
+
                     </div>
                   </div>
                 ))}
@@ -113,12 +123,12 @@ function CartSection({ userCarts, setUserCarts }) {
 
         {/* View Cart button */}
         <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
-          <button
-            className="w-full py-2 px-4 bg-white text-white rounded font-semibold hover:bg-gray-200 transition-colors duration-200"
+          <Button
+            className="w-full py-2 px-4 bg-white text-black rounded font-semibold hover:bg-gray-700 hover:text-white transition-colors duration-300"
             onClick={() => console.log("Navigating to full cart page")}
           >
             View Cart
-          </button>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>

@@ -30,7 +30,7 @@ function ProductModal({ product, isOpen, onClose, onAddToCart }) {
 
             <div className="mt-6 flex justify-end">
               <Button
-                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition"
+                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition cursor-pointer"
                 onClick={() => {
                   onAddToCart(product.id);
                   onClose(false);
