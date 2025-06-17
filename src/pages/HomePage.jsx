@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react"
-import axios from "axios"
+import { useState, useCallback } from "react"
+import { useCart } from "@/context/ProductCartContext"
 
-import { useAuth } from "@/context/Auth"
-import { useCart } from "@/context/CartContext"
+import { Card, CardContent } from "@/components/components/ui/card"
+import { Skeleton } from "@/components/components/ui/skeleton"
+import { Button } from "@/components/components/ui/button"
 
 import ProductModal from "@/components/ProductModal"
 import ProductCard from "@/components/ProductCard"
@@ -10,96 +11,14 @@ import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 
-import { Card, CardContent, CardTitle } from "@/components/components/ui/card"
-import { Skeleton } from "@/components/components/ui/skeleton"
-import { Button } from "@/components/components/ui/button"
-
 function HomePage() {
-  const { user } = useAuth()
-  const { products, userCarts, setUserCarts, addToCart, loading, error } = useCart()
+  const { products, addToCart, loading, error } = useCart()
 
-  // const [products, setProducts] = useState([])
-  // const [loading, setLoading] = useState(false)
-  // const [error, setError] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchInput, setSearchInput] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
-  // const [userCarts, setUserCarts] = useState([]);
-
-  // // Fetch products
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     setLoading(true)
-  //     setError(null)
-
-  //     try {
-  //       const res = await axios.get("https://fakestoreapi.com/products")
-  //       if (!Array.isArray(res.data)) throw new Error("No products found.")
-  //       setProducts(res.data)
-  //     } catch (err) {
-  //       console.error("Error fetching products:", err)
-  //       setError("Failed to load products.")
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   }
-
-  //   fetchProducts()
-  // }, [])
-
-  // // Fetch user carts
-  // useEffect(() => {
-  //   const loadCarts = async () => {
-  //     if (!user || !user.id) {
-  //       setUserCarts([]);
-  //       return;
-  //     }
-
-  //     // Per-user key
-  //     const localKey = `userCarts-${user.id}`;
-  //     const saved = JSON.parse(localStorage.getItem(localKey)) || [];
-
-  //     if (saved.length > 0) {
-  //       setUserCarts(saved);
-  //       return;
-  //     }
-
-  //     // Fetch using API if no local data
-  //     try {
-  //       const cartRes = await axios.get("https://fakestoreapi.com/carts");
-  //       const filtered = cartRes.data.filter((cart) => cart.userId === user.id);
-
-  //       const apiUserCarts = filtered.map((cart) => ({
-  //         ...cart,
-  //         products: cart.products.map((p) => {
-  //           const full = products.find((fp) => fp.id === p.productId);
-  //           return full
-  //             ? { ...full, quantity: p.quantity || 1 }
-  //             : { id: p.productId, title: "Unknown Product", price: 0, quantity: p.quantity || 1 };
-  //         }),
-  //       }));
-
-  //       setUserCarts(apiUserCarts);
-  //     } catch (err) {
-  //       console.error("Failed to fetch API carts", err);
-  //       setUserCarts([]);
-  //     }
-  //   };
-
-  //   loadCarts();
-  // }, [user, products]);
-
-  
-  // // Saving user carts to local storage
-  // useEffect(() => {
-  //   if (user && user.id) {
-  //     const localKey = `userCarts-${user.id}`;
-  //     localStorage.setItem(localKey, JSON.stringify(userCarts));
-  //   }
-  // }, [user, userCarts]);
-
 
   const openModal = useCallback((product) => {
     setSelectedProduct(product)
@@ -117,7 +36,6 @@ function HomePage() {
 
     return matchesSearch && matchesCategory
   })
-
   
   const handleAddToCart = async (productId) => {
     await addToCart(productId)
@@ -128,19 +46,14 @@ function HomePage() {
     <div className="p-6 px-20">
       <div className="flex flex-row justify-between items-center mb-10 mt-5">
         <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
-
         <SearchBar
           searchInput={searchInput}
           setSearchInput={setSearchInput}
           onSearch={() => setSearchTerm(searchInput)}
-        />
-
+        />        
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
-
-          <CartSection 
-            onProductClick={openModal}
-          />
+          <CartSection onProductClick={openModal}/>
         </div>
       </div>
 
@@ -203,6 +116,7 @@ function HomePage() {
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
         onAddToCart={handleAddToCart}
+        isHomepage={true}
       />
 
     </div>

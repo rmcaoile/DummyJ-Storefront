@@ -1,5 +1,9 @@
-import { ShoppingCart, Plus, Minus, Trash } from "lucide-react"
+import axios from "axios"
+import { useCart } from "@/context/ProductCartContext";
+
+import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
+import { Button } from "@/components/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -7,9 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/components/ui/sheet"
-import { Button } from "@/components/components/ui/button"
-import axios from "axios"
-import { useCart } from "@/context/CartContext";
+
 
 function CartSection({ onProductClick }) {
   const { userCarts, setUserCarts } = useCart();

@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
 import { useAuth } from "./Auth";
+import axios from "axios";
 
-const CartContext = createContext();
+const ProductCartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
+export const useCart = () => useContext(ProductCartContext);
 
-export function CartProvider({ children }) {
+export function ProductCartProvider({ children }) {
   const { user } = useAuth();
   const [userCarts, setUserCarts] = useState([]);
   const [products, setProducts] = useState([]);
@@ -159,8 +159,8 @@ export function CartProvider({ children }) {
   };
 
   return (
-    <CartContext.Provider value={{ products, userCarts, setUserCarts, addToCart, loading, error }}>
+    <ProductCartContext.Provider value={{ products, userCarts, setUserCarts, addToCart, loading, error }}>
       {children}
-    </CartContext.Provider>
+    </ProductCartContext.Provider>
   );
 }
