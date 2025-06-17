@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react"
-import { useCart } from "@/context/ProductCartContext"
 import { useAuth } from "@/context/Auth"
 import { useNavigate } from "react-router-dom"
 
@@ -11,7 +10,6 @@ import ProductModal from "@/components/ProductModal"
 
 const UserProfilePage = () => {
   const { user } = useAuth()
-  const { addToCart } = useCart()
   const navigate = useNavigate()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,10 +31,6 @@ const UserProfilePage = () => {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }, [])
-
-  const handleAddToCart = async (productId) => {
-    await addToCart(productId)
-  };
 
   return (
     <div className="p-6 px-20">

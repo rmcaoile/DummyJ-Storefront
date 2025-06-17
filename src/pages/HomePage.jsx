@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { useCart } from "@/context/ProductCartContext"
 
 import { Card, CardContent } from "@/components/components/ui/card"
@@ -20,9 +20,18 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
 
+  const isHomeFromHomePage =  useRef(true)
+
   const openModal = useCallback((product) => {
     setSelectedProduct(product)
+    setIsModalOpen(true)    
+    isHomeFromHomePage.current = true
+  }, [])
+
+  const openModalfromCart = useCallback((product) => {
+    setSelectedProduct(product)
     setIsModalOpen(true)
+    isHomeFromHomePage.current = false
   }, [])
 
   const categories = ["All", ...new Set(products.map((p) => p.category))]
@@ -53,7 +62,7 @@ function HomePage() {
         />        
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
-          <CartSection onProductClick={openModal}/>
+          <CartSection onProductClick={openModalfromCart}/>
         </div>
       </div>
 
@@ -116,7 +125,7 @@ function HomePage() {
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
         onAddToCart={handleAddToCart}
-        isHomepage={true}
+        showButton={isHomeFromHomePage.current}
       />
 
     </div>

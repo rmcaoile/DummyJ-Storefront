@@ -61,7 +61,10 @@ const ProfileSection = () => {
             </div> */}
             <div
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out hover:text-black hover:font-medium font-medium hover:text-red-600"
-              onClick={logout}
+                onClick={() => {
+                  logout()
+                  navigate("/")
+                }}
             >
               Logout
             </div>

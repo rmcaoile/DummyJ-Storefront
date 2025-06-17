@@ -6,7 +6,7 @@ import {
 } from "@/components/components/ui/dialog"
 import { Button } from "@/components/components/ui/button"
 
-function ProductModal({ product, isOpen, onClose, onAddToCart, isHomepage }) {
+function ProductModal({ product, isOpen, onClose, onAddToCart, showButton }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="!max-w-4xl bg-white text-black">
@@ -28,7 +28,7 @@ function ProductModal({ product, isOpen, onClose, onAddToCart, isHomepage }) {
             <p><strong>Description:</strong> {product.description || "N/A"}</p>
             <p><strong>Available Stock:</strong> {product.rating?.count ?? "N/A"}</p>
 
-            {isHomepage && (
+            {showButton && (
               <div className="mt-6 flex justify-end">
                 <Button
                   className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition cursor-pointer"

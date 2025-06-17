@@ -190,7 +190,7 @@ function CartSection({ onProductClick }) {
         {userCarts.length > 0 &&
             <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
               <Button
-                className="w-full py-2 px-4 bg-white text-black rounded font-semibold hover:bg-gray-700 hover:text-white transition-colors duration-200"
+                className="w-full py-2 px-4 bg-green-400 text-black rounded font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200"
                 onClick={() => console.log("Navigating to full cart page")}
               >
                 Checkout
