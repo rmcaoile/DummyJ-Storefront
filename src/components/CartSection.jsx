@@ -9,8 +9,11 @@ import {
 } from "@/components/components/ui/sheet"
 import { Button } from "@/components/components/ui/button"
 import axios from "axios"
+import { useCart } from "@/context/CartContext";
 
-function CartSection({ userCarts, setUserCarts, onProductClick  }) {
+function CartSection({ onProductClick }) {
+  const { userCarts, setUserCarts } = useCart();
+
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
   );

@@ -1,15 +1,22 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
+import { useCart } from "@/context/CartContext"
 
 import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
+import ProductModal from "@/components/ProductModal"
+
 import { useAuth } from "@/context/Auth"
 import { useNavigate } from "react-router-dom"
 
 
 const UserProfilePage = () => {
   const { user } = useAuth()
+  const { addToCart } = useCart()
   const navigate = useNavigate()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+
   const [searchInput, setSearchInput] = useState("")
 
   if (!user) return null 
@@ -21,6 +28,15 @@ const UserProfilePage = () => {
       .split(" ")
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
+  };
+
+  const openModal = useCallback((product) => {
+    setSelectedProduct(product)
+    setIsModalOpen(true)
+  }, [])
+
+  const handleAddToCart = async (productId) => {
+    await addToCart(productId)
   };
 
   return (
@@ -36,7 +52,7 @@ const UserProfilePage = () => {
 
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
-          <CartSection userCarts={[]} setUserCarts={() => {}} />
+          <CartSection onProductClick={openModal}/>
         </div>
       </div>
 
@@ -67,6 +83,14 @@ const UserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={setIsModalOpen}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   )
 }
