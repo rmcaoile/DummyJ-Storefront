@@ -1,7 +1,17 @@
 import { createContext, useContext, useState, useEffect  } from "react"
 import axios from "axios"
+import { toast } from "sonner";
 
 const AuthContext = createContext()
+
+function toCamelCase(name) {
+  if (!name) return '';
+  return name
+    .toLowerCase()
+    .split(' ')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -35,6 +45,7 @@ export function AuthProvider({ children }) {
         
         if (!matchedUser) {
           setError("User not found.")
+          toast.error("Login failed: user not found.");
           return
         }
         
@@ -45,10 +56,13 @@ export function AuthProvider({ children }) {
 
         // Save too Local storage
         localStorage.setItem("token", authToken)
-        localStorage.setItem("user", JSON.stringify(matchedUser))        
+        localStorage.setItem("user", JSON.stringify(matchedUser))     
+        
+        toast.success(`Welcome, ${toCamelCase(matchedUser.name.firstname)}!`);
     } catch (err) {
       console.error("Login failed:", err)
       setError("Invalid username or password.")
+      toast.error("Login failed: Invalid username or password.");
     }
   }
 
@@ -57,6 +71,7 @@ export function AuthProvider({ children }) {
     setToken(null)
     localStorage.removeItem("token")
     localStorage.removeItem("user")
+    toast("You have been logged out.");
   }
 
   return (
