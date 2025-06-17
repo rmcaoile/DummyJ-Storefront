@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import {
   Popover,
   PopoverTrigger,
@@ -11,6 +12,7 @@ import { ChevronDown } from "lucide-react";
 
 const ProfileSection = () => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <Popover>
@@ -47,7 +49,7 @@ const ProfileSection = () => {
           <div className=" text-sm">
             <div
               className="px-4 py-2 hover:bg-gray-100 transition duration-150 ease-in-out hover:text-black hover:font-semibold cursor-pointer "
-              onClick={() => console.log("My Addresses clicked")}
+              onClick={() => navigate("/profile")}
             >
               My Profile
             </div>
