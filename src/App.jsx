@@ -204,7 +204,11 @@ function App() {
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
 
-          <CartSection userCarts={userCarts} setUserCarts={setUserCarts}/>
+          <CartSection 
+            userCarts={userCarts} 
+            setUserCarts={setUserCarts}
+            onProductClick={openModal}
+          />
         </div>
       </div>
 

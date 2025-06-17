@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/components/ui/button"
 import axios from "axios"
 
-function CartSection({ userCarts, setUserCarts }) {
+function CartSection({ userCarts, setUserCarts, onProductClick  }) {
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
   );
@@ -126,12 +126,14 @@ function CartSection({ userCarts, setUserCarts }) {
                     <img
                       src={product.image}
                       alt={product.title}
-                      className="w-12 h-12 object-contain"
+                      className="w-12 h-12 object-contain cursor-pointer hover:scale-105 transition-transform duration-200"
+                      onClick={() => onProductClick(product)}
                     />
-                    {/* TODO: fix ui */}
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className="flex-1">
-                        <p className="font-medium">{product.title}</p>
+                        <p className="font-medium hover:underline cursor-pointer" onClick={() => onProductClick(product)}> 
+                          {product.title}
+                        </p>
                         <p className="text-sm text-gray-800">
                           ${product.price?.toFixed(2)} × {product.quantity || 1} = $
                           {(product.price * (product.quantity || 1)).toFixed(2)}
