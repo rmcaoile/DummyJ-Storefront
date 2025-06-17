@@ -117,7 +117,13 @@ function CartSection({ userCarts, setUserCarts, onProductClick  }) {
                 key={cart.id}
                 className="text-black mb-6 border p-4 rounded bg-white shadow-sm mx-5"
               >
-                <h3 className="font-semibold mb-2">Cart ID: {cart.id}</h3>
+                <h3 className="font-semibold mb-3">
+                    Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                </h3>
                 {cart.products.map((product, index) => (
                   <div
                     key={`${cart.id}-${index}`}
@@ -131,7 +137,7 @@ function CartSection({ userCarts, setUserCarts, onProductClick  }) {
                     />
                     <div className="flex flex-row justify-between items-center w-full">
                       <div className="flex-1">
-                        <p className="font-medium hover:underline cursor-pointer" onClick={() => onProductClick(product)}> 
+                        <p className="font-medium cursor-pointer" onClick={() => onProductClick(product)}> 
                           {product.title}
                         </p>
                         <p className="text-sm text-gray-800">
@@ -175,14 +181,14 @@ function CartSection({ userCarts, setUserCarts, onProductClick  }) {
           )}
         </div>
 
-        {/* View Cart button */}
+        {/* Checkout button */}
         {userCarts.length > 0 &&
             <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
               <Button
                 className="w-full py-2 px-4 bg-white text-black rounded font-semibold hover:bg-gray-700 hover:text-white transition-colors duration-200"
                 onClick={() => console.log("Navigating to full cart page")}
               >
-                View Cart
+                Checkout
               </Button>
             </div>          
         }
