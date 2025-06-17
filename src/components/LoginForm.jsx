@@ -55,7 +55,7 @@ function LoginForm() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full cursor-pointer">
+              <Button type="submit" className="w-full cursor-pointer hover:bg-gray-800 ">
                 Log In
               </Button>
             </form>

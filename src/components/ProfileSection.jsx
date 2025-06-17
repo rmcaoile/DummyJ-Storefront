@@ -6,7 +6,6 @@ import {
 import LoginForm from "@/components/LoginForm"
 import { useAuth } from "@/context/Auth"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/components/ui/avatar"
-import { Button } from "@/components/components/ui/button"
 import { ChevronDown } from "lucide-react";
 
 
