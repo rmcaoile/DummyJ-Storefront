@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useCart } from "@/context/ProductCartContext";
+import { toast } from "sonner";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
@@ -33,7 +34,7 @@ function CartSection({ onProductClick }) {
             return { ...p, quantity: newQuantity }
         }).filter(p => p !== null)              // Remove item in cart if quantity is zero
         
-        const updatedCart = { ...cart, products: updatedProducts };        
+        const updatedCart = { ...cart, products: updatedProducts }        
         // Update cart using fakestore api
         axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
           id: cart.id,
@@ -43,15 +44,27 @@ function CartSection({ onProductClick }) {
             quantity: p.quantity
           }))
         })
-        .then(res => console.log("Cart updated:", res.data))
-        .catch(err => console.error("Failed to update cart", err));
+          .then(res => {
+            console.log("Cart updated:", res.data)
+            toast.success("Updated item quantity.")
+          })
+          .catch(err => {
+            console.error("Failed to update cart", err)
+            toast.error("Failed to update item quantity.")
+          });
 
         // Use fakestoreapi for exercisse purposes
         if (updatedProducts.length === 0) {
           // Delete the cart if it's empty
           axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => console.log("Deleted empty cart:", res.data))
-            .catch(err => console.error("Failed to delete empty cart", err));
+            .then(res => {
+              console.log("Deleted empty cart:", res.data);
+              toast.success("Removed cart with no items.");
+            })
+            .catch(err => {
+              console.error("Failed to delete empty cart", err);
+              toast.error("Failed to delete empty cart.");
+            });
           return null; 
         }
 
@@ -76,14 +89,28 @@ function CartSection({ onProductClick }) {
             quantity: p.quantity
           }))
         })
-        .then(res => console.log("Cart updated by removing item"))
-        .catch(err => console.error("Failed to update cart", err));
+        .then(res => {
+          console.log("Cart updated by removing item");
+          toast.success("Item removed from cart.");
+        })
+        .catch(err => {
+          console.error("Failed to update cart", err);
+          toast.error("Failed to remove item.");
+        });
+
 
         if (updatedProducts.length === 0) {
           // Delete cart using fakestore api if it's now empty
           axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => console.log("Deleted empty cart:", res.data))
-            .catch(err => console.error("Failed to delete cart", err));
+            .then(res => {
+              console.log("Deleted empty cart:", res.data);
+              toast.success("Cart deleted.");
+            })
+            .catch(err => {
+              console.error("Failed to delete cart", err);
+              toast.error("Failed to delete cart.");
+            });
+
           return null;
         }
 

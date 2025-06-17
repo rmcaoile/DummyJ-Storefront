@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./Auth";
 import axios from "axios";
+import { toast } from "sonner";
 
 const ProductCartContext = createContext();
 
@@ -119,9 +120,11 @@ export function ProductCartProvider({ children }) {
       if (existingProductIndex !== -1) {
         // Increase quantity
         existingCart.products[existingProductIndex].quantity += 1;
+        toast.success(`Increased quantity of "${product.title}"`);
       } else {
         // Add new product with quantity 1
         existingCart.products.push({ ...product, quantity: 1 });
+        toast.success(`Added "${product.title}" to your cart`);
       }
 
       updatedCarts = [...userCarts];
@@ -135,7 +138,10 @@ export function ProductCartProvider({ children }) {
         products: existingCart.products
       })
       .then(response => console.log("Cart updated:", response.data))
-      .catch(err => console.error("Failed to update cart:", err));
+      .catch(err => {
+        console.error("Failed to update cart:", err);
+        toast.error("Failed to update cart");
+      });
 
     } else {
       // Create new cart
@@ -147,11 +153,15 @@ export function ProductCartProvider({ children }) {
       };
       updatedCarts = [newCart, ...userCarts];      
       console.log(updatedCarts);
+      toast.success(`Created new cart and added "${product.title}"`);
 
       // For exercise
       axios.post('https://fakestoreapi.com/carts', updatedCarts[0])
         .then(response => console.log("Added new cart", response.data))
-        .catch(err => console.error("Failed to add new cart:", err));
+        .catch(err => {
+          console.error("Failed to add new cart:", err);
+          toast.error("Failed to create new cart");
+        });
     }
     
     // Local Storage save
