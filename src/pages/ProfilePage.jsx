@@ -1,24 +1,19 @@
 import { useState, useCallback } from "react"
 import { useAuth } from "@/context/Auth"
-import { useNavigate } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 
 import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 import ProductModal from "@/components/ProductModal"
 
-
-const UserProfilePage = () => {
+const ProfilePage = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [searchInput, setSearchInput] = useState("")
-
-  if (!user) return null 
-
-  const { name, email, username, phone, address } = user
 
   const toCamelCase = (str) => {
     return str
@@ -31,6 +26,11 @@ const UserProfilePage = () => {
     setSelectedProduct(product)
     setIsModalOpen(true)
   }, [])
+
+  if (!user) return <Navigate to="/" replace />
+
+  const { name, email, username, phone, address } = user
+
 
   return (
     <div className="p-6 px-20">
@@ -85,4 +85,4 @@ const UserProfilePage = () => {
   )
 }
 
-export default UserProfilePage
+export default ProfilePage
