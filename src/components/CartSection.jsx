@@ -104,7 +104,7 @@ function CartSection({ onProductClick }) {
           axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
             .then(res => {
               console.log("Deleted empty cart:", res.data);
-              toast.success("Cart deleted.");
+              toast.success("Removed cart with no items.");
             })
             .catch(err => {
               console.error("Failed to delete cart", err);
