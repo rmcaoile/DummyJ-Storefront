@@ -1,5 +1,8 @@
 import { useState, useCallback, useRef } from "react"
 import { useCart } from "@/context/ProductCartContext"
+import { useSelector, useDispatch } from "react-redux"
+import { useEffect } from "react"
+import { fetchProducts } from "@/state/products/productSlice"
 
 import { Card, CardContent } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
@@ -12,7 +15,11 @@ import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 
 function HomePage() {
-  const { products, addToCart, loading, error } = useCart()
+  const { addToCart } = useCart()
+  const dispatch = useDispatch()
+  const products = useSelector(state => state.products.items)
+  const loading = useSelector(state => state.products.loading)
+  const error = useSelector(state => state.products.error)
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -21,6 +28,10 @@ function HomePage() {
   const [categoryFilter, setCategoryFilter] = useState("All")
 
   const isHomeFromHomePage =  useRef(true)
+
+  useEffect(() => {
+    dispatch(fetchProducts())
+  }, [dispatch])
 
   const openModal = useCallback((product) => {
     setSelectedProduct(product)
