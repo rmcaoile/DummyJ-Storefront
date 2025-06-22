@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef } from "react"
-// import { useCart } from "@/context/ProductCartContext"
 import { useSelector, useDispatch } from "react-redux"
 import { useEffect } from "react"
 import { fetchProducts } from "@/state/products/productSlice"
@@ -17,10 +16,8 @@ import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 
 function HomePage() {
-  // const { addToCart } = useCart()
-  const { user } = useAuth()
-
   const dispatch = useDispatch()
+  const { user } = useAuth()
   const products = useSelector(state => state.products.items)
   const loading = useSelector(state => state.products.loading)
   const error = useSelector(state => state.products.error)
@@ -61,10 +58,6 @@ function HomePage() {
     return matchesSearch && matchesCategory
   })
   
-  // const handleAddToCart = async (productId) => {
-  //   await addToCart(productId)
-  // };
-
   const handleAddToCart = (productId) => {
     if (!user || !user.id) {
       alert("Please log in to add items to your cart.");
