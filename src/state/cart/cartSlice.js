@@ -34,10 +34,29 @@ export const updateCartApi = createAsyncThunk(
         userId: cart.userId,
         products: cart.products.map(p => ({ productId: p.id, quantity: p.quantity }))
       });
-      toast.success("Cart updated in API.");
+      toast.success("Updated item quantity.");
       return res.data;
     } catch (err) {
-      toast.error("Failed to update cart in API.");
+      toast.error("Failed to update cart.");
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+// Remove a product in cart in the API
+export const removeItemCartApi = createAsyncThunk(
+  "cart/updateCartApi",
+  async (cart, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
+        id: cart.id,
+        userId: cart.userId,
+        products: cart.products.map(p => ({ productId: p.id, quantity: p.quantity }))
+      });
+      toast.success("Item removed from cart.");
+      return res.data;
+    } catch (err) {
+      toast.error("Failed to remove item.");
       return rejectWithValue(err.response?.data || err.message);
     }
   }
@@ -54,7 +73,7 @@ export const createCartApi = createAsyncThunk(
         date: cart.date,
         products: cart.products.map(p => ({ productId: p.id, quantity: p.quantity }))
       });
-      toast.success("New cart created in API.");
+      // toast.success("New cart created in API.");
       return res.data;
     } catch (err) {
       toast.error("Failed to create new cart in API.");
@@ -69,10 +88,10 @@ export const deleteCartApi = createAsyncThunk(
   async (cartId, { rejectWithValue }) => {
     try {
       await axios.delete(`https://fakestoreapi.com/carts/${cartId}`);
-      toast.success("Cart deleted in API.");
+      toast.success("Removed cart with no items.");
       return { cartId };
     } catch (err) {
-      toast.error("Failed to delete cart in API.");
+      toast.error("Failed to delete empty cart.");
       return rejectWithValue(err.response?.data || err.message);
     }
   }

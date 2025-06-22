@@ -1,6 +1,10 @@
-import axios from "axios"
-import { useCart } from "@/context/ProductCartContext";
-import { toast } from "sonner";
+// import axios from "axios"
+// import { useCart } from "@/context/ProductCartContext";
+// import { toast } from "sonner";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts } from "@/state/cart/cartSlice";
+import { useAuth } from "@/context/Auth";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
@@ -15,7 +19,16 @@ import {
 
 
 function CartSection({ onProductClick }) {
-  const { userCarts, setUserCarts } = useCart();
+  // const { userCarts, setUserCarts } = useCart();
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const userCarts = useSelector(state => state.cart.userCarts);
+
+  useEffect(() => {
+    if (user && user.id) {
+      dispatch(fetchUserCarts(user.id));
+    }
+  }, [dispatch, user]);
 
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
@@ -24,100 +37,122 @@ function CartSection({ onProductClick }) {
   const handleQuantityChange = (cartId, productId, delta) => {
     const updatedCarts = userCarts
       .map(cart => {
-        if (cart.id !== cartId) return cart
+        if (cart.id !== cartId) return cart;
         let updatedProducts = cart.products
           .map(p => {
-            if (p.id !== productId) return p
-            const currentQuantity = p.quantity || 1
-            const newQuantity = currentQuantity + delta
-            if (newQuantity < 1) return null;     // If minus is selected while quantity is 1 return null
-            return { ...p, quantity: newQuantity }
-        }).filter(p => p !== null)              // Remove item in cart if quantity is zero
+        //     if (p.id !== productId) return p
+        //     const currentQuantity = p.quantity || 1
+        //     const newQuantity = currentQuantity + delta
+        //     if (newQuantity < 1) return null;     // If minus is selected while quantity is 1 return null
+        //     return { ...p, quantity: newQuantity }
+        // }).filter(p => p !== null)              // Remove item in cart if quantity is zero
         
-        const updatedCart = { ...cart, products: updatedProducts }        
-        // Update cart using fakestore api
-        axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
-          id: cart.id,
-          userId: cart.userId,
-          products: updatedProducts.map(p => ({
-            productId: p.id,
-            quantity: p.quantity
-          }))
-        })
-          .then(res => {
-            console.log("Cart updated:", res.data)
-            toast.success("Updated item quantity.")
-          })
-          .catch(err => {
-            console.error("Failed to update cart", err)
-            toast.error("Failed to update item quantity.")
-          });
+        // const updatedCart = { ...cart, products: updatedProducts }        
+        // // Update cart using fakestore api
+        // axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
+        //   id: cart.id,
+        //   userId: cart.userId,
+        //   products: updatedProducts.map(p => ({
+        //     productId: p.id,
+        //     quantity: p.quantity
+        //   }))
+        // })
+        //   .then(res => {
+        //     console.log("Cart updated:", res.data)
+        //     toast.success("Updated item quantity.")
+        //   })
+        //   .catch(err => {
+        //     console.error("Failed to update cart", err)
+        //     toast.error("Failed to update item quantity.")
+        //   });
 
-        // Use fakestoreapi for exercisse purposes
+        // // Use fakestoreapi for exercisse purposes
+            if (p.id !== productId) return p;
+            const currentQuantity = p.quantity || 1;
+            const newQuantity = currentQuantity + delta;
+            if (newQuantity < 1) return null;
+            return { ...p, quantity: newQuantity };
+        }).filter(p => p !== null);
+
+        const updatedCart = { ...cart, products: updatedProducts };
+
         if (updatedProducts.length === 0) {
-          // Delete the cart if it's empty
-          axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => {
-              console.log("Deleted empty cart:", res.data);
-              toast.success("Removed cart with no items.");
-            })
-            .catch(err => {
-              console.error("Failed to delete empty cart", err);
-              toast.error("Failed to delete empty cart.");
-            });
-          return null; 
+          // // Delete the cart if it's empty
+          // axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
+          //   .then(res => {
+          //     console.log("Deleted empty cart:", res.data);
+          //     toast.success("Removed cart with no items.");
+          //   })
+          //   .catch(err => {
+          //     console.error("Failed to delete empty cart", err);
+          //     toast.error("Failed to delete empty cart.");
+          //   });
+          // return null; 
+          dispatch(deleteCartApi(cart.id));
+          return null;
+        } else {
+          dispatch(updateCartApi(updatedCart));
         }
 
         return updatedCart;
       })
       .filter(cart => cart !== null);   // Remove cart if there are no more items
-    setUserCarts(updatedCarts)
+    // setUserCarts(updatedCarts)
+    dispatch(setUserCarts(updatedCarts));
   }
 
   const handleRemoveProduct = (cartId, productId) => {
     const updatedCarts = userCarts
       .map(cart => {
-        if (cart.id !== cartId) return cart
-        const updatedProducts = cart.products.filter(p => p.id !== productId)
+        // if (cart.id !== cartId) return cart
+        // const updatedProducts = cart.products.filter(p => p.id !== productId)
         
-        // Update cart using fakestore api
-        axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
-          id: cart.id,
-          userId: cart.userId,
-          products: updatedProducts.map(p => ({
-            productId: p.id,
-            quantity: p.quantity
-          }))
-        })
-        .then(res => {
-          console.log("Cart updated by removing item");
-          toast.success("Item removed from cart.");
-        })
-        .catch(err => {
-          console.error("Failed to update cart", err);
-          toast.error("Failed to remove item.");
-        });
+        // // Update cart using fakestore api
+        // axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
+        //   id: cart.id,
+        //   userId: cart.userId,
+        //   products: updatedProducts.map(p => ({
+        //     productId: p.id,
+        //     quantity: p.quantity
+        //   }))
+        // })
+        // .then(res => {
+        //   console.log("Cart updated by removing item");
+        //   toast.success("Item removed from cart.");
+        // })
+        // .catch(err => {
+        //   console.error("Failed to update cart", err);
+        //   toast.error("Failed to remove item.");
+        // });
 
+        if (cart.id !== cartId) return cart;
+        const updatedProducts = cart.products.filter(p => p.id !== productId);
 
         if (updatedProducts.length === 0) {
-          // Delete cart using fakestore api if it's now empty
-          axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => {
-              console.log("Deleted empty cart:", res.data);
-              toast.success("Removed cart with no items.");
-            })
-            .catch(err => {
-              console.error("Failed to delete cart", err);
-              toast.error("Failed to delete cart.");
-            });
+          // // Delete cart using fakestore api if it's now empty
+          // axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
+          //   .then(res => {
+          //     console.log("Deleted empty cart:", res.data);
+          //     toast.success("Removed cart with no items.");
+          //   })
+          //   .catch(err => {
+          //     console.error("Failed to delete cart", err);
+          //     toast.error("Failed to delete cart.");
+          //   });
 
+          dispatch(deleteCartApi(cart.id));
           return null;
+        } else {
+          const updatedCart = { ...cart, products: updatedProducts };
+          dispatch(removeItemCartApi(updatedCart));
+          return updatedCart;
         }
 
-        return { ...cart, products: updatedProducts }
+        // return { ...cart, products: updatedProducts }
       })
       .filter(cart => cart !== null);  // Remove cart if there are no more items
-    setUserCarts(updatedCarts)   
+    // setUserCarts(updatedCarts)   
+    dispatch(setUserCarts(updatedCarts));
   }
 
   return (
