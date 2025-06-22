@@ -59,7 +59,7 @@ export const updateCartApi = createAsyncThunk(
 
 // Remove a product in cart in the API
 export const removeItemCartApi = createAsyncThunk(
-  "cart/updateCartApi",
+  "cart/removeItemCartApi",
   async (cart, { rejectWithValue }) => {
     try {
       const res = await axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {

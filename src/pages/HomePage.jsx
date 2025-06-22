@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef } from "react"
-import { useCart } from "@/context/ProductCartContext"
+// import { useCart } from "@/context/ProductCartContext"
 import { useSelector, useDispatch } from "react-redux"
 import { useEffect } from "react"
 import { fetchProducts } from "@/state/products/productSlice"
+import { addToCart } from "@/state/cart/cartSlice"
+import { useAuth } from "@/context/Auth"
 
 import { Card, CardContent } from "@/components/components/ui/card"
 import { Skeleton } from "@/components/components/ui/skeleton"
@@ -15,7 +17,9 @@ import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 
 function HomePage() {
-  const { addToCart } = useCart()
+  // const { addToCart } = useCart()
+  const { user } = useAuth()
+
   const dispatch = useDispatch()
   const products = useSelector(state => state.products.items)
   const loading = useSelector(state => state.products.loading)
@@ -57,10 +61,22 @@ function HomePage() {
     return matchesSearch && matchesCategory
   })
   
-  const handleAddToCart = async (productId) => {
-    await addToCart(productId)
-  };
+  // const handleAddToCart = async (productId) => {
+  //   await addToCart(productId)
+  // };
 
+  const handleAddToCart = (productId) => {
+    if (!user || !user.id) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      alert("Product not found.");
+      return;
+    }
+    dispatch(addToCart({ userId: user.id, product }));
+  };
 
   return (
     <div className="p-6 px-20">
