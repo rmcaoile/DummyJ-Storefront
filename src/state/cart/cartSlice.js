@@ -8,11 +8,20 @@ export const fetchUserCarts = createAsyncThunk(
     const state = thunkAPI.getState();
     const productList = state.products.items;
 
+    // Per-user key
+    const localKey = `userCarts-${userId}`;
+    const saved = JSON.parse(localStorage.getItem(localKey)) || [];
+    if (saved.length > 0) {
+      return saved;
+    }
+
+    // Fetch using API if no local data
     const res = await axios.get("https://fakestoreapi.com/carts");
     const userCarts = res.data.filter((cart) => cart.userId === userId);
     console.log(userCarts);
 
-    return userCarts.map((cart) => ({
+    // return userCarts.map((cart) => ({
+    const mappedCarts = userCarts.map((cart) => ({
       ...cart,
       products: cart.products.map((p) => {
         const full = productList.find((fp) => fp.id === p.productId);
@@ -21,6 +30,11 @@ export const fetchUserCarts = createAsyncThunk(
           : { id: p.productId, title: "Unknown", price: 0, quantity: p.quantity || 1 };
       }),
     }));
+
+    // Save to localStorage 
+    localStorage.setItem(localKey, JSON.stringify(mappedCarts));
+
+    return mappedCarts;
   }
 );
 
