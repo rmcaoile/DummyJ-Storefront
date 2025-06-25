@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts } from "@/state/cart/cartSlice";
 import { useAuth } from "@/context/Auth";
 
@@ -19,6 +19,10 @@ function CartSection({ onProductClick }) {
   const dispatch = useDispatch();
   const { user } = useAuth();
   const userCarts = useSelector(state => state.cart.userCarts);
+
+  const [selectedItems, setSelectedItems] = useState({});
+  const [selectedCarts, setSelectedCarts] = useState({});
+
 
   useEffect(() => {
     if (user && user.id) {
@@ -107,18 +111,46 @@ function CartSection({ onProductClick }) {
                 key={cart.id}
                 className="text-black mb-6 border p-4 rounded bg-white shadow-sm mx-5"
               >
-                <h3 className="font-semibold mb-3">
-                    Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                </h3>
+                <div className="flex flex-row items-center gap-3 mb-3">
+                  {/* Cart Checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={selectedCarts[cart.id] || false}
+                    onChange={(e) =>
+                      setSelectedCarts({
+                        ...selectedCarts,
+                        [cart.id]: e.target.checked
+                      })
+                    }
+                  />
+                  <h3 className="font-semibold">
+                      Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                  </h3>
+
+                </div>
+
                 {cart.products.map((product, index) => (
                   <div
                     key={`${cart.id}-${index}`}
                     className="flex items-center gap-4 mb-3"
                   >
+                    {/* Product Checkbox */}
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={selectedItems[`${cart.id}-${product.id}`] || false}
+                      onChange={(e) =>
+                        setSelectedItems({
+                          ...selectedItems,
+                          [`${cart.id}-${product.id}`]: e.target.checked
+                        })
+                      }
+                    />
+
                     <img
                       src={product.image}
                       alt={product.title}
