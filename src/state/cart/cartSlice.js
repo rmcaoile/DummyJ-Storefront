@@ -186,7 +186,61 @@ const cartSlice = createSlice({
 
       state.userCarts = updatedCarts;
       localStorage.setItem(`userCarts-${userId}`, JSON.stringify(updatedCarts));
-    }
+    },
+
+    updateProductQuantity: (state, action) => {
+      const { cartId, productId, delta, userId } = action.payload;
+      const cartIndex = state.userCarts.findIndex(cart => cart.id === cartId);
+
+      if (cartIndex === -1) return;
+
+      const cart = state.userCarts[cartIndex];
+      const productIndex = cart.products.findIndex(p => p.id === productId);
+
+      if (productIndex === -1) return;
+
+      const product = cart.products[productIndex];
+      const newQuantity = (product.quantity || 1) + delta;
+
+      if (newQuantity < 1) {
+        // Remove product
+        cart.products.splice(productIndex, 1);
+        if (cart.products.length === 0) {
+          state.userCarts.splice(cartIndex, 1);
+          toast.success("Cart removed (no more items).");
+        } else {
+          toast.success(`Removed "${product.title}" from cart.`);
+        }
+      } else {
+        cart.products[productIndex].quantity = newQuantity;
+        toast.success(`Updated quantity of "${product.title}" to ${newQuantity}`);
+      }
+
+      // Update state and localStorage
+      localStorage.setItem(`userCarts-${userId}`, JSON.stringify(state.userCarts));
+    },
+
+    removeProductFromCart: (state, action) => {
+      const { cartId, productId, userId } = action.payload;
+      const cartIndex = state.userCarts.findIndex(cart => cart.id === cartId);
+
+      if (cartIndex === -1) return;
+
+      const cart = state.userCarts[cartIndex];
+      cart.products = cart.products.filter(p => p.id !== productId);
+
+      if (cart.products.length === 0) {
+        state.userCarts.splice(cartIndex, 1);
+        toast.success("Removed cart (no more items).");
+      } else {
+        state.userCarts[cartIndex] = cart;
+        toast.success("Item removed from cart.");
+      }
+
+      // Sync with localStorage
+      localStorage.setItem(`userCarts-${userId}`, JSON.stringify(state.userCarts));
+    },
+
 
   },
   extraReducers: (builder) => {
@@ -203,5 +257,13 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, setUserCarts, checkoutCarts } = cartSlice.actions;
+
+export const {
+  addToCart,
+  setUserCarts,
+  checkoutCarts,
+  updateProductQuantity,
+  removeProductFromCart,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

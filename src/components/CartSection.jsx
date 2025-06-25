@@ -1,4 +1,4 @@
-import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts  } from "@/state/cart/cartSlice";
+import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart  } from "@/state/cart/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/Auth";
@@ -51,51 +51,54 @@ function CartSection({ onProductClick }) {
   );
 
   const handleQuantityChange = (cartId, productId, delta) => {
-    const updatedCarts = userCarts
-      .map(cart => {
-        if (cart.id !== cartId) return cart;
-        let updatedProducts = cart.products
-          .map(p => {
-            if (p.id !== productId) return p;
-            const currentQuantity = p.quantity || 1;
-            const newQuantity = currentQuantity + delta;
-            if (newQuantity < 1) return null;
-            return { ...p, quantity: newQuantity };
-        }).filter(p => p !== null);
+    dispatch(updateProductQuantity({ cartId, productId, delta, userId: user.id }));
 
-        const updatedCart = { ...cart, products: updatedProducts };
+    // const updatedCarts = userCarts
+    //   .map(cart => {
+    //     if (cart.id !== cartId) return cart;
+    //     let updatedProducts = cart.products
+    //       .map(p => {
+    //         if (p.id !== productId) return p;
+    //         const currentQuantity = p.quantity || 1;
+    //         const newQuantity = currentQuantity + delta;
+    //         if (newQuantity < 1) return null;
+    //         return { ...p, quantity: newQuantity };
+    //     }).filter(p => p !== null);
 
-        if (updatedProducts.length === 0) {
-          dispatch(deleteCartApi(cart.id));
-          return null;
-        } else {
-          dispatch(updateCartApi(updatedCart));
-        }
+    //     const updatedCart = { ...cart, products: updatedProducts };
 
-        return updatedCart;
-      })
-      .filter(cart => cart !== null);   // Remove cart if there are no more items
-    dispatch(setUserCarts(updatedCarts));
+    //     if (updatedProducts.length === 0) {
+    //       dispatch(deleteCartApi(cart.id));
+    //       return null;
+    //     } else {
+    //       dispatch(updateCartApi(updatedCart));
+    //     }
+
+    //   })
+    //   .filter(cart => cart !== null);   // Remove cart if there are no more items
+    // dispatch(setUserCarts(updatedCarts));
   }
 
   const handleRemoveProduct = (cartId, productId) => {
-    const updatedCarts = userCarts
-      .map(cart => {
-        if (cart.id !== cartId) return cart;
-        const updatedProducts = cart.products.filter(p => p.id !== productId);
+    dispatch(removeProductFromCart({ cartId, productId, userId: user.id }));
+   
+    // const updatedCarts = userCarts
+    //   .map(cart => {
+    //     if (cart.id !== cartId) return cart;
+    //     const updatedProducts = cart.products.filter(p => p.id !== productId);
 
-        if (updatedProducts.length === 0) {
-          dispatch(deleteCartApi(cart.id));
-          return null;
-        } else {
-          const updatedCart = { ...cart, products: updatedProducts };
-          dispatch(removeItemCartApi(updatedCart));
-          return updatedCart;
-        }
+    //     if (updatedProducts.length === 0) {
+    //       dispatch(deleteCartApi(cart.id));
+    //       return null;
+    //     } else {
+    //       const updatedCart = { ...cart, products: updatedProducts };
+    //       dispatch(removeItemCartApi(updatedCart));
+    //       return updatedCart;
+    //     }
 
-      })
-      .filter(cart => cart !== null);  // Remove cart if there are no more items
-    dispatch(setUserCarts(updatedCarts));
+    //   })
+    //   .filter(cart => cart !== null);  // Remove cart if there are no more items
+    // dispatch(setUserCarts(updatedCarts));
   }
 
   const handleCheckout = () => {
