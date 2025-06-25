@@ -24,12 +24,27 @@ function CartSection({ onProductClick }) {
   const [selectedItems, setSelectedItems] = useState({});
   const [selectedCarts, setSelectedCarts] = useState({});
 
-
   useEffect(() => {
     if (user && user.id) {
       dispatch(fetchUserCarts(user.id));
     }
   }, [dispatch, user]);
+
+  useEffect(() => {
+    const updatedSelectedCarts = {};
+
+    // Loop through each cart in the user's cart history
+    userCarts.forEach((cart) => { 
+      // If all products are selected automatically check the cart too
+      // If not then it is false thus cart is auto not selected
+      const allSelected = cart.products.every(
+        (product) => selectedItems[`${cart.id}-${product.id}`]
+      );
+      updatedSelectedCarts[cart.id] = allSelected;
+    });
+    setSelectedCarts(updatedSelectedCarts);
+  }, [selectedItems, userCarts]);
+
 
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
@@ -130,12 +145,22 @@ function CartSection({ onProductClick }) {
                     type="checkbox"
                     className="cursor-pointer"
                     checked={selectedCarts[cart.id] || false}
-                    onChange={(e) =>
-                      setSelectedCarts({
-                        ...selectedCarts,
-                        [cart.id]: e.target.checked
-                      })
-                    }
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+
+                      // Update cart selection
+                      setSelectedCarts((prev) => ({
+                        ...prev,
+                        [cart.id]: isChecked,
+                      }));
+
+                      // Update all products in that cart
+                      const updatedItems = { ...selectedItems };
+                      cart.products.forEach((product) => {
+                        updatedItems[`${cart.id}-${product.id}`] = isChecked;
+                      });
+                      setSelectedItems(updatedItems);
+                    }}
                   />
                   <h3 className="font-semibold">
                       Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
