@@ -6,6 +6,8 @@ import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
 import ProductModal from "@/components/ProductModal"
+import { Button } from "@/components/components/ui/button"
+
 
 const ProfilePage = () => {
   const { user } = useAuth()
@@ -74,6 +76,13 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      <Button
+        onClick={() => navigate("/")}
+        className="mt-6 bg-gray-500 text-white hover:bg-gray-600 transition px-4 py-2 rounded mx-auto block cursor-pointer"
+      >
+        ← Back to Home
+      </Button>
 
       {/* Product Modal */}
       <ProductModal

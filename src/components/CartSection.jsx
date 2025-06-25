@@ -1,5 +1,7 @@
-import axios from "axios"
-import { useCart } from "@/context/ProductCartContext";
+import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts  } from "@/state/cart/cartSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/Auth";
 import { toast } from "sonner";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
@@ -15,7 +17,34 @@ import {
 
 
 function CartSection({ onProductClick }) {
-  const { userCarts, setUserCarts } = useCart();
+  const dispatch = useDispatch();
+  const { user } = useAuth();
+  const userCarts = useSelector(state => state.cart.userCarts);
+
+  const [selectedItems, setSelectedItems] = useState({});
+  const [selectedCarts, setSelectedCarts] = useState({});
+
+  useEffect(() => {
+    if (user && user.id) {
+      dispatch(fetchUserCarts(user.id));
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    const updatedSelectedCarts = {};
+
+    // Loop through each cart in the user's cart history
+    userCarts.forEach((cart) => { 
+      // If all products are selected automatically check the cart too
+      // If not then it is false thus cart is auto not selected
+      const allSelected = cart.products.every(
+        (product) => selectedItems[`${cart.id}-${product.id}`]
+      );
+      updatedSelectedCarts[cart.id] = allSelected;
+    });
+    setSelectedCarts(updatedSelectedCarts);
+  }, [selectedItems, userCarts]);
+
 
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
@@ -24,101 +53,62 @@ function CartSection({ onProductClick }) {
   const handleQuantityChange = (cartId, productId, delta) => {
     const updatedCarts = userCarts
       .map(cart => {
-        if (cart.id !== cartId) return cart
+        if (cart.id !== cartId) return cart;
         let updatedProducts = cart.products
           .map(p => {
-            if (p.id !== productId) return p
-            const currentQuantity = p.quantity || 1
-            const newQuantity = currentQuantity + delta
-            if (newQuantity < 1) return null;     // If minus is selected while quantity is 1 return null
-            return { ...p, quantity: newQuantity }
-        }).filter(p => p !== null)              // Remove item in cart if quantity is zero
-        
-        const updatedCart = { ...cart, products: updatedProducts }        
-        // Update cart using fakestore api
-        axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
-          id: cart.id,
-          userId: cart.userId,
-          products: updatedProducts.map(p => ({
-            productId: p.id,
-            quantity: p.quantity
-          }))
-        })
-          .then(res => {
-            console.log("Cart updated:", res.data)
-            toast.success("Updated item quantity.")
-          })
-          .catch(err => {
-            console.error("Failed to update cart", err)
-            toast.error("Failed to update item quantity.")
-          });
+            if (p.id !== productId) return p;
+            const currentQuantity = p.quantity || 1;
+            const newQuantity = currentQuantity + delta;
+            if (newQuantity < 1) return null;
+            return { ...p, quantity: newQuantity };
+        }).filter(p => p !== null);
 
-        // Use fakestoreapi for exercisse purposes
+        const updatedCart = { ...cart, products: updatedProducts };
+
         if (updatedProducts.length === 0) {
-          // Delete the cart if it's empty
-          axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => {
-              console.log("Deleted empty cart:", res.data);
-              toast.success("Removed cart with no items.");
-            })
-            .catch(err => {
-              console.error("Failed to delete empty cart", err);
-              toast.error("Failed to delete empty cart.");
-            });
-          return null; 
+          dispatch(deleteCartApi(cart.id));
+          return null;
+        } else {
+          dispatch(updateCartApi(updatedCart));
         }
 
         return updatedCart;
       })
       .filter(cart => cart !== null);   // Remove cart if there are no more items
-    setUserCarts(updatedCarts)
+    dispatch(setUserCarts(updatedCarts));
   }
 
   const handleRemoveProduct = (cartId, productId) => {
     const updatedCarts = userCarts
       .map(cart => {
-        if (cart.id !== cartId) return cart
-        const updatedProducts = cart.products.filter(p => p.id !== productId)
-        
-        // Update cart using fakestore api
-        axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
-          id: cart.id,
-          userId: cart.userId,
-          products: updatedProducts.map(p => ({
-            productId: p.id,
-            quantity: p.quantity
-          }))
-        })
-        .then(res => {
-          console.log("Cart updated by removing item");
-          toast.success("Item removed from cart.");
-        })
-        .catch(err => {
-          console.error("Failed to update cart", err);
-          toast.error("Failed to remove item.");
-        });
-
+        if (cart.id !== cartId) return cart;
+        const updatedProducts = cart.products.filter(p => p.id !== productId);
 
         if (updatedProducts.length === 0) {
-          // Delete cart using fakestore api if it's now empty
-          axios.delete(`https://fakestoreapi.com/carts/${cart.id}`)
-            .then(res => {
-              console.log("Deleted empty cart:", res.data);
-              toast.success("Removed cart with no items.");
-            })
-            .catch(err => {
-              console.error("Failed to delete cart", err);
-              toast.error("Failed to delete cart.");
-            });
-
+          dispatch(deleteCartApi(cart.id));
           return null;
+        } else {
+          const updatedCart = { ...cart, products: updatedProducts };
+          dispatch(removeItemCartApi(updatedCart));
+          return updatedCart;
         }
 
-        return { ...cart, products: updatedProducts }
       })
       .filter(cart => cart !== null);  // Remove cart if there are no more items
-    setUserCarts(updatedCarts)   
+    dispatch(setUserCarts(updatedCarts));
   }
+
+  const handleCheckout = () => {
+    dispatch(checkoutCarts({
+      selectedCarts,
+      selectedItems,
+      userId: user.id,
+    }));
+    
+    setSelectedItems({});
+    setSelectedCarts({});
+  };
+
 
   return (
     <Sheet>
@@ -149,18 +139,57 @@ function CartSection({ onProductClick }) {
                 key={cart.id}
                 className="text-black mb-6 border p-4 rounded bg-white shadow-sm mx-5"
               >
-                <h3 className="font-semibold mb-3">
-                    Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                </h3>
+                <div className="flex flex-row items-center gap-3 mb-3">
+                  {/* Cart Checkbox */}
+                  <input
+                    type="checkbox"
+                    className="cursor-pointer"
+                    checked={selectedCarts[cart.id] || false}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+
+                      // Update cart selection
+                      setSelectedCarts((prev) => ({
+                        ...prev,
+                        [cart.id]: isChecked,
+                      }));
+
+                      // Update all products in that cart
+                      const updatedItems = { ...selectedItems };
+                      cart.products.forEach((product) => {
+                        updatedItems[`${cart.id}-${product.id}`] = isChecked;
+                      });
+                      setSelectedItems(updatedItems);
+                    }}
+                  />
+                  <h3 className="font-semibold">
+                      Date Added: {new Date(cart.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                  </h3>
+
+                </div>
+
                 {cart.products.map((product, index) => (
                   <div
                     key={`${cart.id}-${index}`}
                     className="flex items-center gap-4 mb-3"
                   >
+                    {/* Product Checkbox */}
+                    <input
+                      type="checkbox"
+                      className="mr-2 cursor-pointer"
+                      checked={selectedItems[`${cart.id}-${product.id}`] || false}
+                      onChange={(e) =>
+                        setSelectedItems({
+                          ...selectedItems,
+                          [`${cart.id}-${product.id}`]: e.target.checked
+                        })
+                      }
+                    />
+
                     <img
                       src={product.image}
                       alt={product.title}
@@ -218,7 +247,7 @@ function CartSection({ onProductClick }) {
             <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
               <Button
                 className="w-full py-2 px-4 bg-green-400 text-black rounded font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200"
-                onClick={() => console.log("Navigating to checkout page")}
+                onClick={handleCheckout}
               >
                 Checkout
               </Button>
