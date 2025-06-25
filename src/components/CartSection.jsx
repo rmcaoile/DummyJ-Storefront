@@ -1,7 +1,8 @@
+import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts  } from "@/state/cart/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts } from "@/state/cart/cartSlice";
 import { useAuth } from "@/context/Auth";
+import { toast } from "sonner";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
@@ -82,6 +83,18 @@ function CartSection({ onProductClick }) {
     dispatch(setUserCarts(updatedCarts));
   }
 
+  const handleCheckout = () => {
+    dispatch(checkoutCarts({
+      selectedCarts,
+      selectedItems,
+      userId: user.id,
+    }));
+    
+    setSelectedItems({});
+    setSelectedCarts({});
+  };
+
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -115,6 +128,7 @@ function CartSection({ onProductClick }) {
                   {/* Cart Checkbox */}
                   <input
                     type="checkbox"
+                    className="cursor-pointer"
                     checked={selectedCarts[cart.id] || false}
                     onChange={(e) =>
                       setSelectedCarts({
@@ -141,7 +155,7 @@ function CartSection({ onProductClick }) {
                     {/* Product Checkbox */}
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 cursor-pointer"
                       checked={selectedItems[`${cart.id}-${product.id}`] || false}
                       onChange={(e) =>
                         setSelectedItems({
@@ -208,7 +222,7 @@ function CartSection({ onProductClick }) {
             <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
               <Button
                 className="w-full py-2 px-4 bg-green-400 text-black rounded font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200"
-                onClick={() => console.log("Navigating to checkout page")}
+                onClick={handleCheckout}
               >
                 Checkout
               </Button>

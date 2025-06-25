@@ -152,9 +152,42 @@ const cartSlice = createSlice({
       }
       localStorage.setItem(`userCarts-${userId}`, JSON.stringify(state.userCarts));
     },
+    
     setUserCarts(state, action) {
       state.userCarts = action.payload;
     },
+
+    checkoutCarts: (state, action) => {
+      const { selectedCarts, selectedItems, userId } = action.payload;
+
+      const updatedCarts = state.userCarts
+        .map((cart) => {
+          if (selectedCarts[cart.id]) {
+            toast.success(`Checked out cart on ${cart.date}`);
+            return null;
+          }
+
+          const remaining = cart.products.filter(
+            (p) => !selectedItems[`${cart.id}-${p.id}`]
+          );
+
+          if (remaining.length === 0) {
+            toast.success(`Checked out all items from cart on ${cart.date}`);
+            return null;
+          }
+
+          if (remaining.length < cart.products.length) {
+            toast.success(`Checked out selected items from cart on ${cart.date}`);
+          }
+
+          return { ...cart, products: remaining };
+        })
+        .filter(Boolean);
+
+      state.userCarts = updatedCarts;
+      localStorage.setItem(`userCarts-${userId}`, JSON.stringify(updatedCarts));
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -170,5 +203,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, setUserCarts } = cartSlice.actions;
+export const { addToCart, setUserCarts, checkoutCarts } = cartSlice.actions;
 export default cartSlice.reducer;
