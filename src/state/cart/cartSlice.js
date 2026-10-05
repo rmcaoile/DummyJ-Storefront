@@ -23,14 +23,16 @@ export const fetchUserCarts = createAsyncThunk(
     const userCarts = normalizeCarts(res.data).filter((cart) => cart.userId === userId);
     console.log(userCarts);
 
-    // return userCarts.map((cart) => ({
     const mappedCarts = userCarts.map((cart) => ({
       ...cart,
       products: cart.products.map((p) => {
         const full = productList.find((fp) => fp.id === p.productId);
-        return full
-          ? { ...full, quantity: p.quantity || 1 }
-          : { id: p.productId, title: "Unknown", price: 0, quantity: p.quantity || 1 };
+        return {
+          ...p,
+          ...(full ?? {}),
+          id: p.productId,
+          quantity: p.quantity || 1,
+        };
       }),
     }));
 

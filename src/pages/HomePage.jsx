@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { useEffect } from "react"
-import { fetchProducts } from "@/state/products/productSlice"
+
+import { fetchCategories, fetchProducts } from "@/state/products/productSlice"
 import { addToCart } from "@/state/cart/cartSlice"
+import { PRODUCTS_PAGE_SIZE } from "@/api/config"
 import { useAuth } from "@/context/Auth"
 
 import { Card, CardContent } from "@/components/components/ui/card"
@@ -14,11 +15,20 @@ import ProductCard from "@/components/ProductCard"
 import ProfileSection from "@/components/ProfileSection"
 import SearchBar from "@/components/SearchBar"
 import CartSection from "@/components/CartSection"
+import Pagination from "@/components/Pagination"
+
+const formatCategory = (slug) =>
+  slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
 
 function HomePage() {
   const dispatch = useDispatch()
   const { user } = useAuth()
   const products = useSelector(state => state.products.items)
+  const total = useSelector(state => state.products.total)
+  const categories = useSelector(state => state.products.categories)
   const loading = useSelector(state => state.products.loading)
   const error = useSelector(state => state.products.error)
 
@@ -27,16 +37,21 @@ function HomePage() {
   const [searchInput, setSearchInput] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("All")
+  const [page, setPage] = useState(1)
 
-  const isHomeFromHomePage =  useRef(true)
+  const isHomeFromHomePage = useRef(true)
 
   useEffect(() => {
-    dispatch(fetchProducts())
+    dispatch(fetchCategories())
   }, [dispatch])
+
+  useEffect(() => {
+    dispatch(fetchProducts({ page, category: categoryFilter, search: searchTerm }))
+  }, [dispatch, page, categoryFilter, searchTerm])
 
   const openModal = useCallback((product) => {
     setSelectedProduct(product)
-    setIsModalOpen(true)    
+    setIsModalOpen(true)
     isHomeFromHomePage.current = true
   }, [])
 
@@ -46,18 +61,17 @@ function HomePage() {
     isHomeFromHomePage.current = false
   }, [])
 
-  const categories = ["All", ...new Set(products.map((p) => p.category))]
+  // Search and filtering happen on the server, so changing either has to reset to page 1 
+  const handleSearch = useCallback(() => {
+    setPage(1)
+    setSearchTerm(searchInput)
+  }, [searchInput])
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = (product.title + " " + product.category)
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+  const handleCategoryClick = useCallback((category) => {
+    setPage(1)
+    setCategoryFilter((prev) => (prev === category ? "All" : category))
+  }, [])
 
-    const matchesCategory = categoryFilter === "All" || product.category === categoryFilter
-
-    return matchesSearch && matchesCategory
-  })
-  
   const handleAddToCart = (productId) => {
     if (!user || !user.id) {
       alert("Please log in to add items to your cart.");
@@ -71,6 +85,8 @@ function HomePage() {
     dispatch(addToCart({ userId: user.id, product }));
   };
 
+  const allCategories = ["All", ...categories]
+
   return (
     <div className="p-6 px-20">
       <div className="flex flex-row justify-between items-center mb-10 mt-5">
@@ -78,8 +94,8 @@ function HomePage() {
         <SearchBar
           searchInput={searchInput}
           setSearchInput={setSearchInput}
-          onSearch={() => setSearchTerm(searchInput)}
-        />        
+          onSearch={handleSearch}
+        />
         <div className="flex flex-1 justify-end items-center gap-8">
           <ProfileSection />
           <CartSection onProductClick={openModalfromCart}/>
@@ -88,16 +104,18 @@ function HomePage() {
 
       {/* Category Filters */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
-        {categories.map((category) => (
+        {allCategories.map((category) => (
           <Button
             key={category}
-            variant={categoryFilter === category ? "outline" : "default"}
-            onClick={() =>
-              setCategoryFilter((prev) => (prev === category ? "All" : category))
+            variant="outline"
+            onClick={() => handleCategoryClick(category)}
+            className={
+              categoryFilter === category
+                ? "bg-white text-black hover:bg-gray-100 cursor-pointer"
+                : "text-white hover:bg-gray-800 cursor-pointer"
             }
-            className="cursor-pointer"
           >
-            {category}
+            {category === "All" ? category : formatCategory(category)}
           </Button>
         ))}
       </div>
@@ -123,12 +141,12 @@ function HomePage() {
               <p>{error}</p>
             </div>
           </div>
-        ) : filteredProducts.length === 0 ? (
+        ) : products.length === 0 ? (
           <div className="col-span-full text-center text-gray-500">
             No results found.
           </div>
         ) : (
-          filteredProducts.map((product) => (
+          products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
@@ -138,6 +156,14 @@ function HomePage() {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        page={page}
+        total={total}
+        limit={PRODUCTS_PAGE_SIZE}
+        onPageChange={setPage}
+      />
 
       {/* Product Modal */}
       <ProductModal
