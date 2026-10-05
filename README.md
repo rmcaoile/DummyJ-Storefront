@@ -30,6 +30,28 @@ The app originally used fakestoreapi.com, but was converted to DummyJSON.
 - Toast notification
 
 
+## How to Run
+
+Install the dependencies, then start the Vite dev server.
+
+```bash
+npm install
+npm run dev
+```
+
+
+## Sample Accounts
+
+Log in with any of these sample accounts:
+
+| Username | Password |
+| --- | --- |
+| `emilys` | `emilyspass` |
+| `michaelw` | `michaelwpass` |
+| `sophiab` | `sophiabpass` | 
+
+
+
 ## Walkthrough
 - **Initial Load**  
   On app mount, a GET request is made to the FakeStore API to fetch product data.  
