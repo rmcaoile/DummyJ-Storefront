@@ -26,6 +26,7 @@ The app originally used fakestoreapi.com, but was converted to DummyJSON.
 - Real-time product search 
 - Category-based filtering
 - Product detail modal with image, price, description, rating, and stock info
+- Item checkout simulation
 - Skeleton loading state 
 - Toast notification
 
