@@ -128,6 +128,12 @@ function HomePage() {
     setCategoryFilter((prev) => (prev === category ? "All" : category))
   }, [])
 
+  // Clearing the query drops the search term but keeps the active category
+  const handleClearSearch = useCallback(() => {
+    setPage(1)
+    setSearchTerm("")
+  }, [])
+
   const handleAddToCart = (productId) => {
     if (!user || !user.id) {
       toast.error("Please log in to add items to your cart.");
@@ -154,6 +160,7 @@ function HomePage() {
               searchInput={searchInput}
               setSearchInput={setSearchInput}
               onSearch={handleSearch}
+              onClear={handleClearSearch}
             />
             <div className="flex shrink-0 items-center gap-6 sm:gap-8">
               <ProfileSection />

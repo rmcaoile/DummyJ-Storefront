@@ -14,12 +14,21 @@ export function buildProductsUrl({
   const term = search.trim()
 
   if (term) {
-    return `/products/search?q=${encodeURIComponent(term)}&limit=${limit}&skip=${skip}`
+    return {
+      url: `/products/search?q=${encodeURIComponent(term)}&limit=${limit}&skip=${skip}`,
+      categoryScoped: category && category !== "All",
+    }
   }
 
   if (category && category !== "All") {
-    return `/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`
+    return {
+      url: `/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`,
+      categoryScoped: false,
+    }
   }
 
-  return `/products?limit=${limit}&skip=${skip}`
+  return {
+    url: `/products?limit=${limit}&skip=${skip}`,
+    categoryScoped: false,
+  }
 }

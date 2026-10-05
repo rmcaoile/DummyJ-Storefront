@@ -9,12 +9,26 @@ import { normalizeProduct, normalizeProducts } from "@/api/normalize"
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async ({ page = 1, limit = PRODUCTS_PAGE_SIZE, category = "All", search = "" } = {}) => {
-    const res = await api.get(buildProductsUrl({ page, limit, category, search }))
-    const items = normalizeProducts(res.data)
+    const { url, categoryScoped } = buildProductsUrl({ page, limit, category, search })
+
+    if (!categoryScoped) {
+      const res = await api.get(url)
+      const items = normalizeProducts(res.data)
+
+      return {
+        items,
+        total: res.data?.total ?? items.length,
+      }
+    }
+
+    // Search narrowed to active category, then paged locally
+    const res = await api.get(`/products/search?q=${encodeURIComponent(search.trim())}&limit=0`)
+    const matched = normalizeProducts(res.data).filter((p) => p.category === category)
+    const skip = (page - 1) * limit
 
     return {
-      items,
-      total: res.data?.total ?? items.length,
+      items: matched.slice(skip, skip + limit),
+      total: matched.length,
     }
   }
 );
