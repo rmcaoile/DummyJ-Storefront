@@ -162,6 +162,11 @@ const cartSlice = createSlice({
       state.userCarts = action.payload;
     },
 
+    clearUserCarts(state) {
+      state.userCarts = [];
+      state.error = null;
+    },
+
     checkoutCarts: (state, action) => {
       const { selectedCarts, selectedItems, userId } = action.payload;
 
@@ -266,6 +271,7 @@ const cartSlice = createSlice({
 export const {
   addToCart,
   setUserCarts,
+  clearUserCarts,
   checkoutCarts,
   updateProductQuantity,
   removeProductFromCart,

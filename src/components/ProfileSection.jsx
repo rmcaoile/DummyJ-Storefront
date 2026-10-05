@@ -40,16 +40,16 @@ const ProfileSection = () => {
       <PopoverContent
         side="bottom"
         align="end"
-        className={`relative bg-gray-600 text-white -mr-7 ${
+        className={`relative -mr-7 ${
           user ? "w-40 px-0 py-2" : "w-80"
         }`}
       >
-        <div className={`absolute -top-2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-gray-600 ${user ? "right-6.5" : "right-11.5"}`} />
+        <div className={`absolute -top-2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-popover ${user ? "right-6.5" : "right-11.5"}`} />
 
         {user ? (
           <div className=" text-sm">
             <div
-              className="px-4 py-2 hover:bg-gray-100 transition duration-150 ease-in-out hover:text-black hover:font-semibold cursor-pointer "
+              className="px-4 py-2 hover:bg-accent hover:text-accent-foreground transition duration-150 ease-in-out cursor-pointer"
               onClick={() => navigate("/profile")}
             >
               My Profile
@@ -61,7 +61,7 @@ const ProfileSection = () => {
               My Orders
             </div> */}
             <div
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out hover:text-black hover:font-medium font-medium hover:text-red-600"
+              className="px-4 py-2 hover:bg-accent cursor-pointer transition duration-150 ease-in-out hover:text-accent-foreground hover:font-medium font-medium hover:text-destructive"
                 onClick={() => {
                   logout()
                   navigate("/")

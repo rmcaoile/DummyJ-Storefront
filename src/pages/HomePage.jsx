@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useLayoutEffect, useMemo } from "react"
 import { useSelector, useDispatch } from "react-redux"
+import { toast } from "sonner";
 
 import { fetchCategories, fetchProducts } from "@/state/products/productSlice"
 import { addToCart } from "@/state/cart/cartSlice"
@@ -129,12 +130,12 @@ function HomePage() {
 
   const handleAddToCart = (productId) => {
     if (!user || !user.id) {
-      alert("Please log in to add items to your cart.");
+      toast.error("Please log in to add items to your cart.");
       return;
     }
     const product = products.find((p) => p.id === productId);
     if (!product) {
-      alert("Product not found.");
+      toast.error("Product not found.");
       return;
     }
     dispatch(addToCart({ userId: user.id, product }));

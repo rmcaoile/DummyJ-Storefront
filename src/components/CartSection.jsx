@@ -1,4 +1,4 @@
-import { fetchUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart  } from "@/state/cart/cartSlice";
+import { fetchUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart, clearUserCarts } from "@/state/cart/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/Auth";
@@ -26,6 +26,8 @@ function CartSection({ onProductClick }) {
   useEffect(() => {
     if (user && user.id) {
       dispatch(fetchUserCarts(user.id));
+    } else {
+      dispatch(clearUserCarts());
     }
   }, [dispatch, user]);
 
