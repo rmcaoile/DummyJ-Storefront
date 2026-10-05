@@ -90,16 +90,18 @@ function HomePage() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold sm:text-3xl">Dummy Store</h1>
-          <SearchBar
-            searchInput={searchInput}
-            setSearchInput={setSearchInput}
-            onSearch={handleSearch}
-          />
-          <div className="flex items-center gap-6 sm:gap-8">
-            <ProfileSection />
-            <CartSection onProductClick={openModalfromCart}/>
+          <div className="flex w-full min-w-0 items-center gap-6 sm:flex-1 sm:gap-8">
+            <SearchBar
+              searchInput={searchInput}
+              setSearchInput={setSearchInput}
+              onSearch={handleSearch}
+            />
+            <div className="flex shrink-0 items-center gap-6 sm:gap-8">
+              <ProfileSection />
+              <CartSection onProductClick={openModalfromCart}/>
+            </div>
           </div>
         </div>
       </header>
@@ -125,16 +127,16 @@ function HomePage() {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {loading ? (
-          [...Array(12)].map((_, i) => (
-            <Card key={i} className="pt-5 pb-2 bg-white">
-              <CardContent className="p-4 space-y-2">
-                <Skeleton className="w-full h-48 rounded mb-4" />
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-4 w-1/8" />
+          [...Array(PRODUCTS_PAGE_SIZE)].map((_, i) => (
+            <Card key={i} className="pt-3 sm:pt-5 pb-2 bg-white">
+              <CardContent className="p-2 sm:p-4 space-y-2">
+                <Skeleton className="w-full h-28 sm:h-48 rounded mb-4" />
+                <Skeleton className="h-4 sm:h-6 w-3/4" />
+                <Skeleton className="h-3 sm:h-4 w-1/2" />
+                <Skeleton className="h-3 sm:h-4 w-1/4" />
+                <Skeleton className="h-3 sm:h-4 w-1/8" />
               </CardContent>
             </Card>
           ))

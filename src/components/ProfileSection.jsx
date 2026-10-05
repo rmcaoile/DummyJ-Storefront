@@ -25,15 +25,16 @@ const ProfileSection = () => {
             />
             <AvatarFallback>pfp</AvatarFallback>
           </Avatar>
-            <div className="flex items-center gap-1">
+            <div className="hidden items-center gap-1 sm:flex">
               <div>
-                <p className="text-sm">{user ? "Hello" : "Login / Signup"}</p>
+                <p className="text-sm">{user ? "Hello" : "Login"}</p>
                 <p className="font-bold flex items-center gap-1">
                   {user ? user.username : "Profile"}
                   <ChevronDown className="w-4 h-4" />
                 </p>
               </div>
             </div>
+            <ChevronDown className="w-4 h-4 sm:hidden" />
         </div>
       </PopoverTrigger>
       <PopoverContent
