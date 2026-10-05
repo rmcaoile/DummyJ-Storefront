@@ -50,30 +50,3 @@ Log in with any of these sample accounts:
 | `emilys` | `emilyspass` |
 | `michaelw` | `michaelwpass` |
 | `sophiab` | `sophiabpass` | 
-
-
-
-## Walkthrough
-- **Initial Load**  
-  On app mount, a GET request is made to the FakeStore API to fetch product data.  
-  While loading, skeleton cards are shown.
-
-- **Search Input**  
-  Users can type a keyword (e.g., product name or category).  
-  Pressing **Enter** filters products matching the term.
-
-- **Category Filter**  
-  Clickable buttons allow filtering products by category.  
-  Selecting a category updates the filtered results in real time.
-
-- **Product Modal**  
-  Clicking on any product card opens a modal displaying:
-  - Product image
-  - Title, price, and category
-  - Rating and available stock
-  - Description
-
-- **Error Handling**  
-  If an error occurs while fetching products, a descriptive error message is shown.  
-  If no matching products are found, an appropriate message appears.
-
