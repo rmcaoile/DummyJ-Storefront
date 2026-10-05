@@ -1,7 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./Auth";
-import axios from "axios";
 import { toast } from "sonner";
+
+import { api } from "@/api/client"
+import { LIST_ALL_PARAMS } from "@/api/config"
+import { normalizeCarts, normalizeProducts } from "@/api/normalize"
 
 const ProductCartContext = createContext();
 
@@ -22,9 +25,8 @@ export function ProductCartProvider({ children }) {
       setError(null)
 
       try {
-        const res = await axios.get("https://fakestoreapi.com/products")
-        if (!Array.isArray(res.data)) throw new Error("No products found.")
-        setProducts(res.data)
+        const res = await api.get("/products", { params: LIST_ALL_PARAMS })
+        setProducts(normalizeProducts(res.data))
       } catch (err) {
         console.error("Error fetching products:", err)
         setError("Failed to load products.")
@@ -55,8 +57,8 @@ export function ProductCartProvider({ children }) {
 
       // Fetch using API if no local data
       try {
-        const cartRes = await axios.get("https://fakestoreapi.com/carts");
-        const filtered = cartRes.data.filter((cart) => cart.userId === user.id);
+        const cartRes = await api.get("/carts", { params: LIST_ALL_PARAMS });
+        const filtered = normalizeCarts(cartRes.data).filter((cart) => cart.userId === user.id);
 
         const apiUserCarts = filtered.map((cart) => ({
           ...cart,
@@ -131,8 +133,8 @@ export function ProductCartProvider({ children }) {
       updatedCarts[cartIndex] = existingCart;
       
       // console.log(updatedCarts);
-      // For exercise — send PUT to update the cart in fakestoreapi
-      axios.put(`https://fakestoreapi.com/carts/${existingCart.id}`, {
+// For exercise — send PUT to update the cart
+      api.put(`/carts/${existingCart.id}`, {
         id: existingCart.id,
         userId: existingCart.userId,
         products: existingCart.products
@@ -140,7 +142,7 @@ export function ProductCartProvider({ children }) {
       .then(response => console.log("Cart updated:", response.data))
       .catch(err => {
         console.error("Failed to update cart:", err);
-        toast.error("Failed to update cart");
+        toast.error("Failed to update cart")
       });
 
     } else {
@@ -156,7 +158,7 @@ export function ProductCartProvider({ children }) {
       toast.success(`Created new cart and added "${product.title}"`);
 
       // For exercise
-      axios.post('https://fakestoreapi.com/carts', updatedCarts[0])
+      api.post("/carts", updatedCarts[0])
         .then(response => console.log("Added new cart", response.data))
         .catch(err => {
           console.error("Failed to add new cart:", err);

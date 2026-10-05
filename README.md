@@ -1,12 +1,33 @@
-# Fake Store App
+# Dummy Store
 
-A responsive and dynamic E-Commerce web application built with React that fetches and displays products from the FakeStore API. Users can search for products, filter by category, and view detailed product information in a modal.
+A responsive and dynamic E-Commerce web application built with React that fetches and displays products from DummyJSON. Users can search for products, filter by category, and view detailed product information in a modal. Primarily built to practise **Redux state management**.
+
+
+### Data source
+
+Products, users, and carts come from [DummyJSON](https://dummyjson.com), a free
+public mock e-commerce API. No API key or signup is required.
+The app originally used fakestoreapi.com, but was converted to DummyJSON.
+
+
+## Tech Stack
+
+- React
+- Vite
+- JavaScript
+- Redux Toolkit
+- Tailwind CSS
+- shadcn/ui
+- Axios
+- DummyJSON (data source)
+
 
 ## Features
 - Real-time product search 
 - Category-based filtering
 - Product detail modal with image, price, description, rating, and stock info
 - Skeleton loading state 
+- Toast notification
 
 
 ## Walkthrough
@@ -33,12 +54,3 @@ A responsive and dynamic E-Commerce web application built with React that fetche
   If an error occurs while fetching products, a descriptive error message is shown.  
   If no matching products are found, an appropriate message appears.
 
-
-## What I Learned
-- Creating responsive UI with modal popups using shadcn libraries
-- Managing compound filters (search + category) with minimal re-renders
-
-## Challenges Faced
-- Preventing API calls on every keystroke (only search on **Enter**)
-- Managing multiple filters simultaneously (search term and category)
-- Designing a consistent modal experience 

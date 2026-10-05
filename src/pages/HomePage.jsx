@@ -74,7 +74,7 @@ function HomePage() {
   return (
     <div className="p-6 px-20">
       <div className="flex flex-row justify-between items-center mb-10 mt-5">
-        <h1 className="text-3xl font-bold p-0 flex-1">Fake Store</h1>
+        <h1 className="text-3xl font-bold p-0 flex-1">Dummy Store</h1>
         <SearchBar
           searchInput={searchInput}
           setSearchInput={setSearchInput}

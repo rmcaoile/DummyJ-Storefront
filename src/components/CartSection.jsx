@@ -1,8 +1,7 @@
-import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart  } from "@/state/cart/cartSlice";
+import { fetchUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart  } from "@/state/cart/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/Auth";
-import { toast } from "sonner";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"

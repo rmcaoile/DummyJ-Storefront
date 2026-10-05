@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { toast } from "sonner";
+
+import { api } from "@/api/client"
+import { LIST_ALL_PARAMS } from "@/api/config"
+import { normalizeCarts } from "@/api/normalize"
 
 export const fetchUserCarts = createAsyncThunk(
   "cart/fetchUserCarts",
@@ -16,8 +19,8 @@ export const fetchUserCarts = createAsyncThunk(
     }
 
     // Fetch using API if no local data
-    const res = await axios.get("https://fakestoreapi.com/carts");
-    const userCarts = res.data.filter((cart) => cart.userId === userId);
+    const res = await api.get("/carts", { params: LIST_ALL_PARAMS });
+    const userCarts = normalizeCarts(res.data).filter((cart) => cart.userId === userId);
     console.log(userCarts);
 
     // return userCarts.map((cart) => ({
@@ -43,7 +46,7 @@ export const updateCartApi = createAsyncThunk(
   "cart/updateCartApi",
   async (cart, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
+      const res = await api.put(`/carts/${cart.id}`, {
         id: cart.id,
         userId: cart.userId,
         products: cart.products.map(p => ({ productId: p.id, quantity: p.quantity }))
@@ -62,7 +65,7 @@ export const removeItemCartApi = createAsyncThunk(
   "cart/removeItemCartApi",
   async (cart, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`https://fakestoreapi.com/carts/${cart.id}`, {
+      const res = await api.put(`/carts/${cart.id}`, {
         id: cart.id,
         userId: cart.userId,
         products: cart.products.map(p => ({ productId: p.id, quantity: p.quantity }))
@@ -81,7 +84,7 @@ export const createCartApi = createAsyncThunk(
   "cart/createCartApi",
   async (cart, { rejectWithValue }) => {
     try {
-      const res = await axios.post("https://fakestoreapi.com/carts", {
+      const res = await api.post("/carts", {
         id: cart.id,
         userId: cart.userId,
         date: cart.date,
@@ -101,7 +104,7 @@ export const deleteCartApi = createAsyncThunk(
   "cart/deleteCartApi",
   async (cartId, { rejectWithValue }) => {
     try {
-      await axios.delete(`https://fakestoreapi.com/carts/${cartId}`);
+      await api.delete(`/carts/${cartId}`);
       toast.success("Removed cart with no items.");
       return { cartId };
     } catch (err) {
