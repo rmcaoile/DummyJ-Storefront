@@ -1,8 +1,7 @@
-import { fetchUserCarts, updateCartApi, removeItemCartApi, deleteCartApi, setUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart  } from "@/state/cart/cartSlice";
+import { fetchUserCarts, checkoutCarts, updateProductQuantity, removeProductFromCart, clearUserCarts } from "@/state/cart/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/context/Auth";
-import { toast } from "sonner";
 
 import { ShoppingCart, Plus, Minus } from "lucide-react"
 import { Badge } from "@/components/components/ui/badge"
@@ -16,6 +15,27 @@ import {
 } from "@/components/components/ui/sheet"
 
 
+const getProductQuantity = (product) => product.quantity || 1;
+
+const getProductTotal = (product) =>
+  (Number(product.price) || 0) * getProductQuantity(product);
+
+const formatPrice = (value) => (Number(value) || 0).toFixed(2);
+
+const summarizeSelection = (carts, selectedItems) =>
+  carts.reduce(
+    (summary, cart) =>
+      cart.products.reduce((acc, product) => {
+        if (!selectedItems[`${cart.id}-${product.id}`]) return acc;
+        return {
+          count: acc.count + getProductQuantity(product),
+          total: acc.total + getProductTotal(product),
+        };
+      }, summary),
+    { count: 0, total: 0 }
+  );
+
+
 function CartSection({ onProductClick }) {
   const dispatch = useDispatch();
   const { user } = useAuth();
@@ -27,6 +47,8 @@ function CartSection({ onProductClick }) {
   useEffect(() => {
     if (user && user.id) {
       dispatch(fetchUserCarts(user.id));
+    } else {
+      dispatch(clearUserCarts());
     }
   }, [dispatch, user]);
 
@@ -48,6 +70,11 @@ function CartSection({ onProductClick }) {
 
   const totalCartItems = userCarts.reduce(
     (total, cart) => total + cart.products.length, 0
+  );
+
+  const { count: selectedCount, total: selectedTotal } = useMemo(
+    () => summarizeSelection(userCarts, selectedItems),
+    [userCarts, selectedItems]
   );
 
   const handleQuantityChange = (cartId, productId, delta) => {
@@ -205,8 +232,8 @@ function CartSection({ onProductClick }) {
                           {product.title}
                         </p>
                         <p className="text-sm text-gray-800">
-                          ${product.price?.toFixed(2)} × {product.quantity || 1} = $
-                          {(product.price * (product.quantity || 1)).toFixed(2)}
+                          ${formatPrice(product.price)} × {getProductQuantity(product)} = $
+                          {formatPrice(getProductTotal(product))}
                         </p>
                       </div>
 
@@ -245,14 +272,23 @@ function CartSection({ onProductClick }) {
           )}
         </div>
 
-        {/* Checkout button */}
+        {/* Selected items summary and checkout */}
         {userCarts.length > 0 &&
             <div className="p-4 border-t border-gray-700 bg-[#242424] sticky bottom-0">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-gray-300">
+                  {selectedCount} {selectedCount === 1 ? "item" : "items"} selected
+                </span>
+                <span className="text-lg font-semibold text-white tabular-nums">
+                  ${formatPrice(selectedTotal)}
+                </span>
+              </div>
               <Button
-                className="w-full py-2 px-4 bg-green-400 text-black rounded font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200"
+                className="w-full py-2 px-4 bg-green-400 text-black rounded font-semibold hover:bg-green-600 hover:text-white transition-colors duration-200 disabled:bg-gray-600 disabled:text-gray-400"
                 onClick={handleCheckout}
+                disabled={selectedCount === 0}
               >
-                Checkout
+                {selectedCount > 0 ? `Checkout (${selectedCount})` : "Checkout"}
               </Button>
             </div>          
         }

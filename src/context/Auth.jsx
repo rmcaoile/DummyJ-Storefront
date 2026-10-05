@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect  } from "react"
-import axios from "axios"
 import { toast } from "sonner";
+
+import { api } from "@/api/client"
+import { LIST_ALL_PARAMS } from "@/api/config"
+import { extractToken, normalizeUsers } from "@/api/normalize"
 
 const AuthContext = createContext()
 
@@ -32,16 +35,20 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     try {
         // Log-in and get token
-        const res = await axios.post("https://fakestoreapi.com/auth/login", credentials)
-        console.log(res.data)
-        const authToken = res.data.token
-        
+        const res = await api.post("/auth/login", credentials)
+        const authToken = extractToken(res.data)
+
+        if (!authToken) {
+          setError("Invalid username or password.")
+          toast.error("Login failed: invalid username or password.");
+          return
+        }
+
         // Get all users
-        const usersRes = await axios.get("https://fakestoreapi.com/users")
-        
+        const usersRes = await api.get("/users", { params: LIST_ALL_PARAMS })
+
         // Find specific user using username
-        const matchedUser = usersRes.data.find(user => user.username === credentials.username)
-        console.log(matchedUser)
+        const matchedUser = normalizeUsers(usersRes.data).find(user => user.username === credentials.username)
         
         if (!matchedUser) {
           setError("User not found.")

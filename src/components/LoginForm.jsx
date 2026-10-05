@@ -17,27 +17,27 @@ function LoginForm() {
   }
 
   return (
-    <Card className="max-w-md mx-auto shadow-none border-none py-3 gap-1">
+    <Card className="max-w-md mx-auto shadow-none border-none py-3 gap-1 bg-transparent text-inherit">
       <CardHeader>
         <CardTitle className="text-center text-2xl">Login</CardTitle>
       </CardHeader>
       <CardContent>
         {/* TODO: Profile */}
         {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive" className="mb-4 bg-destructive/10 border-destructive/30">
+            <AlertDescription className="text-destructive">{error}</AlertDescription>
           </Alert>
         )}
         {user ? (
-          <p className="text-green-600 font-medium text-center">
+          <p className="text-green-400 font-medium text-center">
             Logged in as <strong>{user.username}</strong>
           </p>
         ) : (
           <div>
-            <p className="mb-3">Enter your e-mail and password:</p>
+            <p className="mb-3 text-muted-foreground">Enter your e-mail and password:</p>
             <form onSubmit={handleSubmit} className="space-y-4 ">
               <div>
-                <Label htmlFor="username" className="mb-1">Username <span className="text-red-300">*</span></Label>
+                <Label htmlFor="username" className="mb-1">Username <span className="text-destructive">*</span></Label>
                 <Input
                   id="username"
                   value={username}
@@ -46,7 +46,7 @@ function LoginForm() {
                 />
               </div>
               <div>
-                <Label htmlFor="password" className="mb-1">Password <span className="text-red-300">*</span></Label>
+                <Label htmlFor="password" className="mb-1">Password <span className="text-destructive">*</span></Label>
                 <Input
                   id="password"
                   type="password"
@@ -55,7 +55,7 @@ function LoginForm() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full cursor-pointer hover:bg-gray-800 ">
+              <Button type="submit" variant="outline" className="w-full cursor-pointer hover:bg-gray-800 ">
                 Log In
               </Button>
             </form>

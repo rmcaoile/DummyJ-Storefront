@@ -8,7 +8,7 @@ function SearchBar({ searchInput, setSearchInput, onSearch }) {
   }
 
   return (
-    <div className="flex flex-1 justify-center">
+    <div className="flex w-full min-w-0 flex-1 justify-center">
       <input
         type="text"
         placeholder="Search products..."
