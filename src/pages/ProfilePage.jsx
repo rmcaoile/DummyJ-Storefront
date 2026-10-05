@@ -35,19 +35,23 @@ const ProfilePage = () => {
 
 
   return (
-    <div className="p-6 px-20">
-      <div className="flex flex-row justify-between items-center mb-10 mt-5">
-        <h1 className="text-3xl font-bold p-0 flex-1 cursor-pointer" onClick={() => navigate("/")}>Dummy Store</h1>
-        <SearchBar
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          onSearch={() => console.log("Searching", searchInput)}
-        />
-        <div className="flex flex-1 justify-end items-center gap-8">
-          <ProfileSection />
-          <CartSection onProductClick={openModal}/>
+    <>
+      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold sm:text-3xl cursor-pointer" onClick={() => navigate("/")}>Dummy Store</h1>
+          <SearchBar
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+            onSearch={() => console.log("Searching", searchInput)}
+          />
+          <div className="flex items-center gap-6 sm:gap-8">
+            <ProfileSection />
+            <CartSection onProductClick={openModal}/>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
 
       {/* Profile Content */}
       <div className="max-w-xl mx-auto bg-white p-6 shadow-lg rounded-xl">
@@ -90,7 +94,8 @@ const ProfilePage = () => {
         isOpen={isModalOpen}
         onClose={setIsModalOpen}
       />
-    </div>
+      </div>
+    </>
   )
 }
 

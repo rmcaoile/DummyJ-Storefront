@@ -88,19 +88,23 @@ function HomePage() {
   const allCategories = ["All", ...categories]
 
   return (
-    <div className="p-6 px-20">
-      <div className="flex flex-row justify-between items-center mb-10 mt-5">
-        <h1 className="text-3xl font-bold p-0 flex-1">Dummy Store</h1>
-        <SearchBar
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          onSearch={handleSearch}
-        />
-        <div className="flex flex-1 justify-end items-center gap-8">
-          <ProfileSection />
-          <CartSection onProductClick={openModalfromCart}/>
+    <>
+      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold sm:text-3xl">Dummy Store</h1>
+          <SearchBar
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+            onSearch={handleSearch}
+          />
+          <div className="flex items-center gap-6 sm:gap-8">
+            <ProfileSection />
+            <CartSection onProductClick={openModalfromCart}/>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <div className="mx-auto w-full max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
 
       {/* Category Filters */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
@@ -173,8 +177,8 @@ function HomePage() {
         onAddToCart={handleAddToCart}
         showButton={isHomeFromHomePage.current}
       />
-
-    </div>
+      </div>
+    </>
   )
 }
 
