@@ -6,6 +6,7 @@ import ProfileSection from "@/components/ProfileSection"
 import CartSection from "@/components/CartSection"
 import ProductModal from "@/components/ProductModal"
 import { Button } from "@/components/components/ui/button"
+import { Mail, Phone, MapPin } from "lucide-react";
 
 
 const ProfilePage = () => {
@@ -52,26 +53,41 @@ const ProfilePage = () => {
       <div className="max-w-xl mx-auto bg-white p-6 shadow-lg rounded-xl">
         <h2 className="text-black text-2xl font-bold text-center mb-6">My Profile</h2>
 
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="/pfp-placeholder.jpg"
+            alt="Profile"
+            className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+          />
+          <p className="mt-3 text-lg font-semibold text-gray-900">
+            {toCamelCase(name.firstname)} {toCamelCase(name.lastname)}
+          </p>
+          <p className="text-sm text-gray-500">@{username}</p>
+        </div>
+
         <div className="space-y-4 text-gray-800 text-sm">
-          <div>
-            <span className="font-semibold">Username:</span> {username}
+          <div className="flex items-start gap-3">
+            <Mail className="w-5 h-5 mt-0.5 text-gray-500 shrink-0" />
+            <div>
+              <span className="font-semibold">Email:</span> {email}
+            </div>
           </div>
-          <div>
-            <span className="font-semibold">Full Name:</span> {toCamelCase(name.firstname)} {toCamelCase(name.lastname)}
-          </div>
-          <div>
-            <span className="font-semibold">Email:</span> {email}
-          </div>
-          <div>
-            <span className="font-semibold">Phone:</span> {phone}
+          <div className="flex items-start gap-3">
+            <Phone className="w-5 h-5 mt-0.5 text-gray-500 shrink-0" />
+            <div>
+              <span className="font-semibold">Phone:</span> {phone}
+            </div>
           </div>
 
-          <div>
-            <span className="font-semibold">Address:</span><br />
-              {address.number} {toCamelCase(address.street)}, {toCamelCase(address.city)}, {address.zipcode}<br />
-            <span className="text-xs text-gray-500">
-              Lat: {address.geolocation.lat}, Long: {address.geolocation.long}
-            </span>
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 mt-0.5 text-gray-500 shrink-0" />
+            <div>
+              <span className="font-semibold">Address:</span><br />
+                {address.number} {toCamelCase(address.street)}, {toCamelCase(address.city)}, {address.zipcode}<br />
+              <span className="text-xs text-gray-500">
+                Lat: {address.geolocation.lat}, Long: {address.geolocation.long}
+              </span>
+            </div>
           </div>
         </div>
       </div>
