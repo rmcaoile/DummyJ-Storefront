@@ -37,7 +37,7 @@ const ProfilePage = () => {
     <>
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
-          <h1 className="w-full text-center text-2xl font-bold sm:w-auto sm:text-left sm:text-3xl cursor-pointer" onClick={() => navigate("/")}>Dummy Store</h1>
+          <h1 className="w-full text-center text-2xl font-bold sm:w-auto sm:text-left sm:text-3xl cursor-pointer" onClick={() => navigate("/")}>Redux Store</h1>
           <div className="flex w-full min-w-0 items-center justify-end gap-6 sm:flex-1 sm:gap-8">
             <div className="flex shrink-0 items-center gap-6 sm:gap-8">
               <ProfileSection />

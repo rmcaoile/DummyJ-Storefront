@@ -1,4 +1,4 @@
-# Dummy Store
+# Redux Store
 
 A responsive and dynamic E-Commerce web application built with React that fetches and displays products from DummyJSON. Users can search for products, filter by category, and view detailed product information in a modal. Primarily built to practice **Redux state management** and **responsive UI design**.
 
