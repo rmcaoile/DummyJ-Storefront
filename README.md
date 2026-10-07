@@ -3,6 +3,11 @@
 A responsive and dynamic E-Commerce web application built with React that fetches and displays products from DummyJSON. Users can search for products, filter by category, and view detailed product information in a modal. Primarily built to practice **Redux state management** and **responsive UI design**.
 
 
+### Live Demo
+
+[https://redux-store-rmc.vercel.app/](https://redux-store-rmc.vercel.app/)
+
+
 ### Data source
 
 Products, users, and carts come from [DummyJSON](https://dummyjson.com), a free
@@ -20,6 +25,7 @@ The app originally used fakestoreapi.com, but was converted to DummyJSON.
 - shadcn/ui
 - Axios
 - DummyJSON (data source)
+- Vercel (deployment)
 
 
 ## Features
